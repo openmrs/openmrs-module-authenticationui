@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module configVersion="1.2">
+
+	<id>${project.parent.artifactId}</id>
+	<name>${project.parent.name}</name>
+	<version>${project.parent.version}</version>
+	<package>${project.parent.groupId}.${project.parent.artifactId}</package>
+	<author>${project.parent.organization.name}</author>
+	<description>${project.parent.description}</description>
+
+	<activator>org.openmrs.module.authenticationui.AuthenticationUiModuleActivator</activator>
+
+	<require_version>${openmrsVersion}</require_version>
+
+	<require_modules>
+		<require_module>org.openmrs.module.authentication</require_module>
+		<require_module>org.openmrs.module.uiframework</require_module>
+		<require_module>org.openmrs.module.uicommons</require_module>
+	</require_modules>
+
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+
+</module>
