@@ -20,7 +20,7 @@ import org.openmrs.LocationTag;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.web.AuthenticationSession;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiContext;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
@@ -36,16 +36,16 @@ public class LoginPageController {
 			@SpringBean("locationService") LocationService locationService,
 			PageRequest request) {
 
-		AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
+		AuthenticationUiContext authenticationUiContext = new AuthenticationUiContext();
 
 		if (Context.isAuthenticated()) {
-			return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
+			return "redirect:" + authenticationUiContext.getConfig().getHomePageUrl(ui);
 		}
 
 		AuthenticationSession authenticationSession = new AuthenticationSession(request.getRequest(), request.getResponse());
 		List<Location> loginLocations = new ArrayList<>();
-		if (authenticationUiConfig.isShowLoginLocations()) {
-			String locationTagName = authenticationUiConfig.getLoginLocationTagName();
+		if (authenticationUiContext.getConfig().isShowLoginLocations()) {
+			String locationTagName = authenticationUiContext.getConfig().getLoginLocationTagName();
 			if (StringUtils.isNotBlank(locationTagName)) {
 				LocationTag loginLocationTag = locationService.getLocationTagByName(locationTagName);
 				loginLocations = locationService.getLocationsByTag(loginLocationTag);
@@ -56,7 +56,7 @@ public class LoginPageController {
 		}
 
 		Location lastLoginLocation = null;
-		String cookieName = authenticationUiConfig.getLastLocationCookieName();
+		String cookieName = authenticationUiContext.getConfig().getLastLocationCookieName();
 		if (StringUtils.isNotBlank(cookieName)) {
 			String lastSessionLocationId = request.getCookieValue(cookieName);
 			if (StringUtils.isNotBlank(lastSessionLocationId)) {
@@ -68,7 +68,7 @@ public class LoginPageController {
 			}
 		}
 
-		pageModel.put("authenticationUiConfig", authenticationUiConfig);
+		pageModel.put("authenticationUiContext", authenticationUiContext);
 		pageModel.put("authenticationSession", authenticationSession);
 		pageModel.addAttribute("locations", loginLocations);
 		pageModel.addAttribute("lastSessionLocation", lastLoginLocation);

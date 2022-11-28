@@ -1,7 +1,7 @@
 <%
     ui.decorateWith("authenticationui", "standardLoginPage", [
             title: ui.message("authenticationui.login.title"),
-            authenticationUiConfig: authenticationUiConfig
+            authenticationUiContext: authenticationUiContext
     ])
 %>
 <style>
@@ -12,7 +12,7 @@
     }
 </style>
 
-<% if (authenticationUiConfig.getLoginWarningIfNotChrome()) { %>
+<% if (authenticationUiContext.config.getLoginWarningIfNotChrome()) { %>
     <script type="text/javascript">
         jq(document).ready(function() {
             var ua = window.navigator.userAgent;
@@ -25,7 +25,7 @@
         <div class="note error">
             <div class="text">
                 <i class="icon-remove medium"></i>
-                <p>${ ui.message(authenticationUiConfig.getLoginWarningIfNotChrome()) }</p>
+                <p>${ ui.message(authenticationUiContext.config.getLoginWarningIfNotChrome()) }</p>
             </div>
             <div class="close-icon"><i class="icon-remove"></i></div>
         </div>
@@ -36,7 +36,7 @@
 
     <form id="login-form" method="post" autocomplete="off">
 
-        <h1>${ ui.message(authenticationUiConfig.getLoginWelcomeMessage()) }</h1>
+        <h1>${ ui.message(authenticationUiContext.config.getLoginWelcomeMessage()) }</h1>
 
         <fieldset>
 
@@ -104,7 +104,7 @@
         <h3>${ ui.message("authenticationui.login.cannotLogin") }</h3>
     </div>
     <div class="dialog-content">
-        <% if (authenticationUiConfig.isAllowPasswordReset()) { %>
+        <% if (authenticationUiContext.config.isAllowPasswordReset()) { %>
             <p class="dialog-instructions">${ ui.message("authenticationui.login.usernameOrEmail") }</p>
             <p id="password-reset-message" style="padding-bottom:10px; color:red;"></p>
             <p style="padding-bottom: 20px;">
@@ -121,27 +121,31 @@
 </div>
 
 <script type="text/javascript">
-    document.getElementById('username').focus();
+    jq( document ).ready(function() {
+        jq('#username').focus();
 
-    updateSelectedOption = function() {
-        jq('#sessionLocation li').removeClass('selected');
-        var sessionLocationVal = jq('#sessionLocationInput').val();
+        updateSelectedOption = function() {
+            jq('#sessionLocation li').removeClass('selected');
+            var sessionLocationVal = jq('#sessionLocationInput').val();
 
-        if(parseInt(sessionLocationVal, 10) > 0){
-            jq('#sessionLocation li[value|=' + sessionLocationVal + ']').addClass('selected');
-            jq('#login-button').removeClass('disabled');
-            jq('#login-button').removeAttr('disabled');
-        }else{
-            jq('#login-button').addClass('disabled');
-            jq('#login-button').attr('disabled','disabled');
+            if (jq('#sessionLocation li').size() === 0) {
+                jq('#login-button').removeClass('disabled');
+                jq('#login-button').removeAttr('disabled');
+            }
+            else if(parseInt(sessionLocationVal, 10) > 0) {
+                jq('#sessionLocation li[value|=' + sessionLocationVal + ']').addClass('selected');
+                jq('#login-button').removeClass('disabled');
+                jq('#login-button').removeAttr('disabled');
+            } else {
+                jq('#login-button').addClass('disabled');
+                jq('#login-button').attr('disabled','disabled');
+            }
+        };
+
+        isUsernameValid = function(username) {
+            return (username && username.length !== 0 && username.indexOf(' ') < 0);
         }
-    };
 
-    isUsernameValild = function(username) {
-        return (username && username.length !== 0 && username.indexOf(' ') < 0);
-    }
-
-    jq(function() {
         updateSelectedOption();
 
         jq('#sessionLocation li').click( function() {

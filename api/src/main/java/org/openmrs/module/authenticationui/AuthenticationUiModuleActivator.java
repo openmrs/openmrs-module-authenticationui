@@ -11,7 +11,10 @@ package org.openmrs.module.authenticationui;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
+
+import java.util.Properties;
 
 /**
  * This class contains the logic that is run every time this module is either started or shutdown
@@ -19,10 +22,48 @@ import org.openmrs.module.BaseModuleActivator;
 public class AuthenticationUiModuleActivator extends BaseModuleActivator {
 
 	private static final Logger log = LogManager.getLogger(AuthenticationUiModuleActivator.class);
+
+	public static final String MODULE_PREFIX = "authenticationui.";
 	
 	@Override
 	public void started() {
 		log.info("Authentication UI Module Started");
+		Properties p = Context.getRuntimeProperties();
+		for (String key : p.stringPropertyNames()) {
+			if (key.equals(MODULE_PREFIX + "headerLogoUrlProvider")) {
+				AuthenticationUiModuleConfig.setHeaderLogoUrlProvider(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "headerLogoUrlResource")) {
+				AuthenticationUiModuleConfig.setHeaderLogoUrlResource(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "homePageProvider")) {
+				AuthenticationUiModuleConfig.setHomePageProvider(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "homePageResource")) {
+				AuthenticationUiModuleConfig.setHomePageResource(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "showLoginLocations")) {
+				AuthenticationUiModuleConfig.setShowLoginLocations(Boolean.parseBoolean(p.getProperty(key)));
+			}
+			else if (key.equals(MODULE_PREFIX + "loginLocationTagName")) {
+				AuthenticationUiModuleConfig.setLoginLocationTagName(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "lastLocationCookieName")) {
+				AuthenticationUiModuleConfig.setLastLocationCookieName(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "loginWelcomeMessage")) {
+				AuthenticationUiModuleConfig.setLoginWelcomeMessage(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "loginWarningIfNotChrome")) {
+				AuthenticationUiModuleConfig.setLoginWarningIfNotChrome(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "allowPasswordReset")) {
+				AuthenticationUiModuleConfig.setAllowPasswordReset(Boolean.parseBoolean(p.getProperty(key)));
+			}
+			else if (key.equals(MODULE_PREFIX + "accountAdminPrivilege")) {
+				AuthenticationUiModuleConfig.setAccountAdminPrivilege(p.getProperty(key));
+			}
+		}
 	}
 	
 	@Override

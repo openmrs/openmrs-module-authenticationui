@@ -10,7 +10,9 @@
 package org.openmrs.module.authenticationui;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * This class provides a means to configure the behavior and overwrite defaults in this module with custom values
@@ -29,6 +31,7 @@ public class AuthenticationUiModuleConfig {
 	private String loginWelcomeMessage = "authenticationui.login.welcomeMessage";
 	private String loginWarningIfNotChrome = "";
 	private boolean allowPasswordReset = false;
+	private String accountAdminPrivilege = PrivilegeConstants.EDIT_USERS;
 
 	private AuthenticationUiModuleConfig() {
 	}
@@ -79,6 +82,10 @@ public class AuthenticationUiModuleConfig {
 		instance.allowPasswordReset = allowPasswordReset;
 	}
 
+	public static void setAccountAdminPrivilege(String accountAdminPrivilege) {
+		instance.accountAdminPrivilege = accountAdminPrivilege;
+	}
+
 	// ***** instance getters
 
 	public String getHeaderLogoUrl(UiUtils ui) {
@@ -111,6 +118,18 @@ public class AuthenticationUiModuleConfig {
 
 	public boolean isAllowPasswordReset() {
 		return allowPasswordReset;
+	}
+
+	public String getAccountAdminPrivilege() {
+		return accountAdminPrivilege;
+	}
+
+	public String getPageDecoratorProvider() {
+		return ModuleFactory.isModuleStarted("appui") ? "appui" : "authenticationui";
+	}
+
+	public String getPageDecoratorResource() {
+		return ModuleFactory.isModuleStarted("appui") ? "standardEmrPage" : "legacyUi";
 	}
 
 	public String getPageUrl(UiUtils ui, String provider, String resource) {

@@ -1,7 +1,7 @@
 <%
     ui.decorateWith("authenticationui", "standardLoginPage", [
             title: ui.message("authenticationui.loginSecret.title"),
-            authenticationUiConfig: authenticationUiConfig
+            authenticationUiContext: authenticationUiContext
     ])
 %>
 <div id="login-page">

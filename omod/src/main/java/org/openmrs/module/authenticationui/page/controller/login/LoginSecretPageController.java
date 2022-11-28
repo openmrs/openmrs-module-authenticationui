@@ -20,7 +20,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.UserLogin;
 import org.openmrs.module.authentication.web.AuthenticationSession;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiContext;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
@@ -34,10 +34,10 @@ public class LoginSecretPageController {
 			UiUtils ui,
 			PageRequest request) {
 
-		AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
+		AuthenticationUiContext authenticationUiContext = new AuthenticationUiContext();
 
 		if (Context.isAuthenticated()) {
-			return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
+			return "redirect:" + authenticationUiContext.getConfig().getHomePageUrl(ui);
 		}
 
 		AuthenticationSession session = new AuthenticationSession(request.getRequest(), request.getResponse());
@@ -60,7 +60,7 @@ public class LoginSecretPageController {
 			return "redirect:" + ui.pageLink("authenticationui", "login/login");
 		}
 
-		pageModel.put("authenticationUiConfig", authenticationUiConfig);
+		pageModel.put("authenticationUiContext", authenticationUiContext);
 		pageModel.put("authenticationSession", session);
 		pageModel.put("question", question);
 		return null;
