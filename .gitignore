@@ -32,5 +32,7 @@ omod/bin/
 # OS X auto-generated files #
 .DS_Store
 
- *.css
-omod/src/main/compass/sass-external/*
+*.css
+omod/node
+omod/node_modules
+omod/src/main/compass

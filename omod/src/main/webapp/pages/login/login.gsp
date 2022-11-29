@@ -1,7 +1,7 @@
 <%
     ui.decorateWith("authenticationui", "standardLoginPage", [
             title: ui.message("authenticationui.login.title"),
-            authenticationUiContext: authenticationUiContext
+            authenticationUiConfig: authenticationUiConfig
     ])
 %>
 <style>
@@ -12,7 +12,8 @@
     }
 </style>
 
-<% if (authenticationUiContext.config.getLoginWarningIfNotChrome()) { %>
+
+<% if (authenticationUiConfig.getLoginWarningIfNotChrome()) { %>
     <script type="text/javascript">
         jq(document).ready(function() {
             var ua = window.navigator.userAgent;
@@ -25,7 +26,7 @@
         <div class="note error">
             <div class="text">
                 <i class="icon-remove medium"></i>
-                <p>${ ui.message(authenticationUiContext.config.getLoginWarningIfNotChrome()) }</p>
+                <p>${ ui.message(authenticationUiConfig.getLoginWarningIfNotChrome()) }</p>
             </div>
             <div class="close-icon"><i class="icon-remove"></i></div>
         </div>
@@ -36,7 +37,7 @@
 
     <form id="login-form" method="post" autocomplete="off">
 
-        <h1>${ ui.message(authenticationUiContext.config.getLoginWelcomeMessage()) }</h1>
+        <h1>${ ui.message(authenticationUiConfig.getLoginWelcomeMessage()) }</h1>
 
         <fieldset>
 
@@ -104,7 +105,7 @@
         <h3>${ ui.message("authenticationui.login.cannotLogin") }</h3>
     </div>
     <div class="dialog-content">
-        <% if (authenticationUiContext.config.isAllowPasswordReset()) { %>
+        <% if (authenticationUiConfig.isAllowPasswordReset()) { %>
             <p class="dialog-instructions">${ ui.message("authenticationui.login.usernameOrEmail") }</p>
             <p id="password-reset-message" style="padding-bottom:10px; color:red;"></p>
             <p style="padding-bottom: 20px;">
@@ -114,7 +115,7 @@
             <button class="confirm">${ ui.message("authenticationui.login.requestPasswordReset") }</button>
         <% } else { %>
             <p class="dialog-instructions">${ ui.message("authenticationui.login.cannotLoginInstructions") }</p>
-            <button class="confirm">${ ui.message("authenticationui.login.cancel") }</button>
+            <button class="cancel">${ ui.message("authenticationui.login.cancel") }</button>
         </div>
         <% } %>
     </div>

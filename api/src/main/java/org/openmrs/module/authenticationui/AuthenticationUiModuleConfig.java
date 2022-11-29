@@ -32,6 +32,7 @@ public class AuthenticationUiModuleConfig {
 	private String loginWarningIfNotChrome = "";
 	private boolean allowPasswordReset = false;
 	private String accountAdminPrivilege = PrivilegeConstants.EDIT_USERS;
+	private String phoneNumberPersonAttributeType = null;
 
 	private AuthenticationUiModuleConfig() {
 	}
@@ -86,6 +87,10 @@ public class AuthenticationUiModuleConfig {
 		instance.accountAdminPrivilege = accountAdminPrivilege;
 	}
 
+	public void setPhoneNumberPersonAttributeType(String phoneNumberPersonAttributeType) {
+		instance.phoneNumberPersonAttributeType = phoneNumberPersonAttributeType;
+	}
+
 	// ***** instance getters
 
 	public String getHeaderLogoUrl(UiUtils ui) {
@@ -122,6 +127,10 @@ public class AuthenticationUiModuleConfig {
 
 	public String getAccountAdminPrivilege() {
 		return accountAdminPrivilege;
+	}
+
+	public String getPhoneNumberPersonAttributeType() {
+		return phoneNumberPersonAttributeType;
 	}
 
 	public String getPageDecoratorProvider() {

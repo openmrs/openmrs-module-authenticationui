@@ -5,8 +5,9 @@ import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
-import org.openmrs.module.authenticationui.AuthenticationUiContext;
+import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -38,13 +39,13 @@ public class ChangeSecurityQuestionPageController {
                       @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                       HttpServletRequest request) {
 
-        AuthenticationUiContext authenticationUiContext = new AuthenticationUiContext();
+        AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
 
         User currentUser = Context.getAuthenticatedUser();
         User userToSetup = currentUser;
         boolean isOwnAccount = true;
         if (userId != null) {
-            if (currentUser.hasPrivilege(authenticationUiContext.getConfig().getAccountAdminPrivilege())) {
+            if (currentUser.hasPrivilege(authenticationUiConfig.getAccountAdminPrivilege())) {
                 userToSetup = userService.getUser(userId);
                 isOwnAccount = false;
             }
@@ -72,14 +73,14 @@ public class ChangeSecurityQuestionPageController {
                        UiUtils ui,
                        PageModel model) {
 
-        AuthenticationUiContext authenticationUiContext = new AuthenticationUiContext();
+        AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
 
         // First ensure that if someone is editing someone elses account, that they are authorized
         User currentUser = Context.getAuthenticatedUser();
         User userToSetup = currentUser;
         boolean isOwnAccount = true;
         if (userId != null) {
-            if (currentUser.hasPrivilege(authenticationUiContext.getConfig().getAccountAdminPrivilege())) {
+            if (currentUser.hasPrivilege(authenticationUiConfig.getAccountAdminPrivilege())) {
                 userToSetup = userService.getUser(userId);
                 isOwnAccount = false;
             }

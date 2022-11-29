@@ -18,7 +18,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.UserLogin;
 import org.openmrs.module.authentication.web.AuthenticationSession;
-import org.openmrs.module.authenticationui.AuthenticationUiContext;
+import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
@@ -30,10 +30,10 @@ public class LoginTotpPageController {
 			UiUtils ui,
 			PageRequest request) {
 
-		AuthenticationUiContext authenticationUiContext = new AuthenticationUiContext();
+		AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
 
 		if (Context.isAuthenticated()) {
-			return "redirect:" + authenticationUiContext.getConfig().getHomePageUrl(ui);
+			return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
 		}
 
 		AuthenticationSession session = new AuthenticationSession(request.getRequest(), request.getResponse());
@@ -47,7 +47,7 @@ public class LoginTotpPageController {
 			return "redirect:" + ui.pageLink("authenticationui", "login/login");
 		}
 
-		pageModel.put("authenticationUiContext", authenticationUiContext);
+		pageModel.put("authenticationUiConfig", authenticationUiConfig);
 		pageModel.put("authenticationSession", session);
 		return null;
 	}

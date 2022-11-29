@@ -1,13 +1,14 @@
 <%
-    ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("emr.task.myAccount.changePassword.label") ])
-    ui.includeCss("authenticationui", "account.css")
+    ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.changePassword.title") ])
+    ui.includeCss("authenticationui", "authentication.css", -50)
+    ui.includeCss("authenticationui", "account.css", -60)
     ui.includeJavascript("authenticationui", "changePassword.js")
 %>
 
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("emr.app.system.administration.myAccount.label")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' },
+        { label: "${ ui.message("authenticationui.myAccount.title")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' },
         { label: "${ ui.message("emr.task.myAccount.changePassword.label")}" }
     ];
     var errorMessageOldPassword = "${ui.message("emr.account.changePassword.oldPassword.required")}";

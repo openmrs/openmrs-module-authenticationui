@@ -1,6 +1,7 @@
 <%
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authentication.totp.configureTotp") ])
-    ui.includeCss("authenticationui", "account.css")
+    ui.includeCss("authenticationui", "authentication.css", -50)
+    ui.includeCss("authenticationui", "account.css", -60)
     def returnUrl = isOwnAccount ? "myAccount.page" : "account.page?personId=" + userToSetup.person.personId;
 %>
 
@@ -8,7 +9,7 @@
     var breadcrumbs = [];
     breadcrumbs.push({ icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' });
     <% if (isOwnAccount) { %>
-        breadcrumbs.push({ label: "${ ui.message("emr.app.system.administration.myAccount.label")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' });
+        breadcrumbs.push({ label: "${ ui.message("authenticationui.myAccount.title")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' });
     <% } else { %>
         breadcrumbs.push({ label: "${ ui.message("emr.app.systemAdministration.label")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' });
         breadcrumbs.push({ label: "${ ui.message("emr.task.accountManagement.label")}" , link: '${ui.pageLink("authenticationui", "admin/manageAccounts")}'});

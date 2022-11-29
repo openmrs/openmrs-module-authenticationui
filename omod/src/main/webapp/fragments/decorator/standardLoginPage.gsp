@@ -1,8 +1,8 @@
 <%
     // ***** Adapted from appui module
     def title = config.title ?: ui.message("authenticationui.login.title")
-    def headerIconUrl = config.authenticationUiContext.config.getHeaderLogoUrl(ui);
-    def homePageUrl = config.authenticationUiContext.config.getHomePageUrl(ui);
+    def headerIconUrl = config.authenticationUiConfig.getHeaderLogoUrl(ui);
+    def homePageUrl = config.authenticationUiConfig.getHomePageUrl(ui);
 
     ui.includeJavascript("uicommons", "jquery-1.12.4.min.js", Integer.MAX_VALUE)
     ui.includeJavascript("uicommons", "jquery-ui-1.9.2.custom.min.js", Integer.MAX_VALUE - 10)
@@ -18,6 +18,8 @@
 
     // simplemodal plugin: http://www.ericmmartin.com/projects/simplemodal/
     ui.includeJavascript("uicommons", "jquery.simplemodal.1.4.4.min.js", Integer.MAX_VALUE - 20)
+
+    ui.includeCss("authenticationui", "authentication.css", Integer.MAX_VALUE - 20)
 %>
 <!DOCTYPE html>
 <html>

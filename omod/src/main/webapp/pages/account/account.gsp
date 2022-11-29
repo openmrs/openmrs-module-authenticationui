@@ -1,7 +1,7 @@
 <%
-    ui.decorateWith("appui", "standardEmrPage")
-
-    ui.includeCss("authenticationui", "account.css")
+    ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.account.title") ])
+    ui.includeCss("authenticationui", "authentication.css", -50)
+    ui.includeCss("authenticationui", "account.css", -60)
 
     def createAccount = (account.person.personId == null);
 

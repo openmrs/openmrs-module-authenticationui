@@ -1,20 +1,16 @@
 <%
-    ui.decorateWith(authenticationUiContext.config.pageDecoratorProvider, authenticationUiContext.config.pageDecoratorResource, [
-			title: ui.message("authenticationui.activeUsers.title"),
-			authenticationUiContext: authenticationUiContext
-	])
-	ui.includeCss("authenticationui", "account.css")
+    ui.decorateWith("appui", "standardEmrPage", [title: ui.message("authenticationui.activeUsers.title")])
+    ui.includeCss("authenticationui", "authentication.css", -50)
 %>
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/${ui.contextPath()}/index.htm' },
-        { label: "${ ui.message("emr.app.systemAdministration.label")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' },
+        { label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' },
         { label: "${ ui.message("authenticationui.activeUsers.title")}" }
     ];
 </script>
 
 <h3>${  ui.message("authenticationui.activeUsers.title") }</h3>
-<hr>
 <table id="active-users-table" style="width: 100%;">
 	<thead>
 		<tr>
