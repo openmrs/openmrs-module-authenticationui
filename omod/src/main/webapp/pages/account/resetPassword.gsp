@@ -15,9 +15,9 @@
 <body>
 <script type="text/javascript">
     var OPENMRS_CONTEXT_PATH = '${ ui.contextPath() }';
-    var errorMessageOldPassword = "${ui.message("emr.account.changePassword.oldPassword.required")}";
-    var errorMessageNewPassword = "${ui.message("emr.account.changePassword.newPassword.required")}";
-    var errorMessageNewAndConfirmPassword = "${ui.message("emr.account.changePassword.newAndConfirmPassword.DoesNotMatch")}";
+    var errorMessageOldPassword = "${ui.message("authenticationui.changePassword.oldPassword.required")}";
+    var errorMessageNewPassword = "${ui.message("authenticationui.changePassword.newPassword.required")}";
+    var errorMessageNewAndConfirmPassword = "${ui.message("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch")}";
 </script>
 
 ${ ui.includeFragment("appui", "header") }
@@ -29,17 +29,17 @@ ${ ui.includeFragment("appui", "header") }
         <form method="post" id="reset-password-forms">
             <fieldset>
 
-                <legend>${ ui.message("emr.account.newPassword") }</legend>
+                <legend>${ ui.message("authenticationui.changePassword.newPassword") }</legend>
 
                 <p id="newPasswordSection" class="emr_passwordDetails">
-                    <label class="form-header" for="newPassword">${ ui.message("emr.account.newPassword") }</label>
+                    <label class="form-header" for="newPassword">${ ui.message("authenticationui.changePassword.newPassword") }</label>
                     <input type="password" id="newPassword" name="newPassword"  autocomplete="off"/>
-                    <label id="format-password">${ ui.message("emr.account.passwordFormat") }</label>
+                    <label id="format-password">${ ui.message("authenticationui.changePassword.passwordFormat") }</label>
                     ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "newPassword" ])}
                 </p>
 
                 <p id="confirmPasswordSection" class="emr_passwordDetails">
-                    <label class="form-header" for="confirmPassword">${ ui.message("emr.user.confirmPassword") }</label>
+                    <label class="form-header" for="confirmPassword">${ ui.message("authenticationui.changePassword.confirmPassword") }</label>
                     <input type="password" id="confirmPassword" name="confirmPassword"  autocomplete="off"/>
                     ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "confirmPassword" ])}
                 </p>

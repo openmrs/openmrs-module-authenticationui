@@ -62,19 +62,19 @@ public class ResetPasswordPageController {
             }
             Context.setLocale(userService.getDefaultLocaleForUser(user));
             if (StringUtils.isBlank(newPassword) || StringUtils.isBlank(confirmPassword)) {
-                throw new ValidationException(ui.message("emr.account.changePassword.newAndConfirmPassword.required"));
+                throw new ValidationException(ui.message("authenticationui.changePassword.newAndConfirmPassword.required"));
             }
             else if (!newPassword.equals(confirmPassword)) {
-                throw new ValidationException(ui.message("emr.account.changePassword.newAndConfirmPassword.DoesNotMatch"));
+                throw new ValidationException(ui.message("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch"));
             }
             userService.changePasswordUsingActivationKey(activationKey, newPassword);
-            request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE, ui.message("emr.account.changePassword.success"));
+            request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE, ui.message("authenticationui.changePassword.success"));
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");
         }
         catch (Exception e) {
             request.getSession().setAttribute(
                     UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE,
-                    ui.message("emr.account.changePassword.fail", new Object[]{e.getMessage()}, Context.getLocale())
+                    ui.message("authenticationui.changePassword.fail", new Object[]{e.getMessage()}, Context.getLocale())
             );
             log.warn("An error occurred while trying to reset password", e);
         }

@@ -63,6 +63,12 @@ public class AuthenticationUiModuleActivator extends BaseModuleActivator {
 			else if (key.equals(MODULE_PREFIX + "accountAdminPrivilege")) {
 				AuthenticationUiModuleConfig.setAccountAdminPrivilege(p.getProperty(key));
 			}
+			else if (key.equals(MODULE_PREFIX + "phoneNumberPersonAttributeType")) {
+				AuthenticationUiModuleConfig.setPhoneNumberPersonAttributeType(p.getProperty(key));
+			}
+			else if (key.equals(MODULE_PREFIX + "defaultLocationUserProperty")) {
+				AuthenticationUiModuleConfig.setDefaultLocationUserProperty(p.getProperty(key));
+			}
 		}
 	}
 	

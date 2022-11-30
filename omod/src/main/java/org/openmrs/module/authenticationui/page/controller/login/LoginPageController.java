@@ -74,4 +74,8 @@ public class LoginPageController {
 		pageModel.addAttribute("lastSessionLocation", lastLoginLocation);
 		return null;
 	}
+
+	public String post(UiUtils ui) {
+		return "redirect:" + AuthenticationUiModuleConfig.getInstance().getHomePageUrl(ui);
+	}
 }

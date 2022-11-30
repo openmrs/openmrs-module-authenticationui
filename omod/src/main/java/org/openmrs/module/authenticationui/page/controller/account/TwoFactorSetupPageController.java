@@ -38,7 +38,7 @@ public class TwoFactorSetupPageController {
                 isOwnAccount = false;
             }
             else {
-                String msg = messageSourceService.getMessage("emr.user.unauthorizedPageError");
+                String msg = messageSourceService.getMessage("authenticationui.unauthorizedPageError");
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
                 return "redirect:index.htm";
             }
@@ -90,7 +90,7 @@ public class TwoFactorSetupPageController {
                 isOwnAccount = false;
             }
             else {
-                String msg = messageSourceService.getMessage("emr.user.unauthorizedPageError");
+                String msg = messageSourceService.getMessage("authenticationui.unauthorizedPageError");
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
                 return "redirect:index.htm";
             }
@@ -107,7 +107,7 @@ public class TwoFactorSetupPageController {
                         // If a user is not editing their own account, and the configuration page does not support a configurable userId, fail
                         if (userId != null) {
                             if (!url.contains("{userId}")) {
-                                String msg = messageSourceService.getMessage("emr.user.unauthorizedPageError");
+                                String msg = messageSourceService.getMessage("authenticationui.unauthorizedPageError");
                                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
                                 return "redirect:authenticationui/account/twoFactorSetup.page?userId=" + userId;
                             }

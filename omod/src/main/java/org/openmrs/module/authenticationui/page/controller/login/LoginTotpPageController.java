@@ -51,4 +51,8 @@ public class LoginTotpPageController {
 		pageModel.put("authenticationSession", session);
 		return null;
 	}
+
+	public String post(UiUtils ui) {
+		return "redirect:" + AuthenticationUiModuleConfig.getInstance().getHomePageUrl(ui);
+	}
 }

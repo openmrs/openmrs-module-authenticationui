@@ -89,11 +89,11 @@ public class AuthenticationUiModuleConfig {
 		instance.accountAdminPrivilege = accountAdminPrivilege;
 	}
 
-	public void setPhoneNumberPersonAttributeType(String phoneNumberPersonAttributeType) {
+	public static void setPhoneNumberPersonAttributeType(String phoneNumberPersonAttributeType) {
 		instance.phoneNumberPersonAttributeType = phoneNumberPersonAttributeType;
 	}
 
-	public void setDefaultLocationUserProperty(String defaultLocationUserProperty) {
+	public static void setDefaultLocationUserProperty(String defaultLocationUserProperty) {
 		instance.defaultLocationUserProperty = defaultLocationUserProperty;
 	}
 

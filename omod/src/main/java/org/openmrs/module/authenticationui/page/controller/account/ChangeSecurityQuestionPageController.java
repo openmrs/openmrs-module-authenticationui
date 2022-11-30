@@ -48,7 +48,7 @@ public class ChangeSecurityQuestionPageController {
                 isOwnAccount = false;
             }
             else {
-                String msg = messageSourceService.getMessage("emr.user.unauthorizedPageError");
+                String msg = messageSourceService.getMessage("authenticationui.unauthorizedPageError");
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
                 return "redirect:index.htm";
             }
@@ -82,7 +82,7 @@ public class ChangeSecurityQuestionPageController {
                 isOwnAccount = false;
             }
             else {
-                String msg = messageSourceService.getMessage("emr.user.unauthorizedPageError");
+                String msg = messageSourceService.getMessage("authenticationui.unauthorizedPageError");
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
                 return "redirect:index.htm";
             }
@@ -99,24 +99,24 @@ public class ChangeSecurityQuestionPageController {
 
         // Validate submission
         if (StringUtils.isBlank(securityQuestion.getPassword()) && isOwnAccount) {
-            errors.rejectValue("password", "emr.user.password.required",
-                    new Object[]{messageSourceService.getMessage("emr.user.password.required")}, null);
+            errors.rejectValue("password", "authenticationui.changeSecretQuestion.password.required",
+                    new Object[]{messageSourceService.getMessage("authenticationui.changeSecretQuestion.passwordRequired")}, null);
         }
         if (StringUtils.isBlank(securityQuestion.getQuestion())) {
-            errors.rejectValue("question", "emr.user.secretQuestion.required",
-                    new Object[]{messageSourceService.getMessage("emr.user.secretQuestion.required")}, null);
+            errors.rejectValue("question", "authenticationui.secretQuestion.required",
+                    new Object[]{messageSourceService.getMessage("authenticationui.secretQuestion.required")}, null);
         }
         if (StringUtils.isBlank(securityQuestion.getAnswer())) {
-            errors.rejectValue("answer", "emr.user.secretAnswer.required",
-                    new Object[]{messageSourceService.getMessage("emr.user.secretAnswer.required")}, null);
+            errors.rejectValue("answer", "authenticationui.secretAnswer.required",
+                    new Object[]{messageSourceService.getMessage("authenticationui.secretAnswer.required")}, null);
         }
         if (StringUtils.isBlank(securityQuestion.getConfirmAnswer())) {
-            errors.rejectValue("confirmAnswer", "emr.user.secretAnswerConfirmation.required",
-                    new Object[]{messageSourceService.getMessage("emr.user.secretAnswerConfirmation.required")}, null);
+            errors.rejectValue("confirmAnswer", "authenticationui.secretAnswerConfirmation.required",
+                    new Object[]{messageSourceService.getMessage("authenticationui.secretAnswerConfirmation.required")}, null);
         }
         if (!securityQuestion.getAnswer().equalsIgnoreCase(securityQuestion.getConfirmAnswer())) {
-            errors.rejectValue("confirmAnswer", "emr.user.secretAnswerConfirmation.noMatch",
-                    new Object[]{messageSourceService.getMessage("emr.user.secretAnswerConfirmation.noMatch")}, null);
+            errors.rejectValue("confirmAnswer", "authenticationui.secretAnswerConfirmation.noMatch",
+                    new Object[]{messageSourceService.getMessage("authenticationui.secretAnswerConfirmation.noMatch")}, null);
         }
 
         if (errors.hasErrors()) {
@@ -151,12 +151,12 @@ public class ChangeSecurityQuestionPageController {
                     userToSetup.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
                     userService.saveUser(userToSetup);
                 }
-                String msg = messageSourceService.getMessage("emr.user.changeSecretQuestion.success", null, Context.getLocale());
+                String msg = messageSourceService.getMessage("authenticationui.changeSecretQuestion.success", null, Context.getLocale());
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE, msg);
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");
             }
             catch (Exception e) {
-                String msg = messageSourceService.getMessage("emr.user.changeSecretQuestion.fail", new Object[]{e.getMessage()}, Context.getLocale());
+                String msg = messageSourceService.getMessage("authenticationui.changeSecretQuestion.fail", new Object[]{e.getMessage()}, Context.getLocale());
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
                 return "account/changeSecurityQuestion";
             }

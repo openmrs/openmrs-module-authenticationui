@@ -201,7 +201,7 @@
                                             <i class="fas fa-fw fa-lock"></i>
                                         </div>
                                         <div class="col-11 col-lg-10">
-                                            ${ ui.message("emr.task.myAccount.changePassword.label") }
+                                            ${ ui.message("authenticationui.changePassword.title") }
                                         </div>
                                     </div>
                                 </a>

@@ -51,11 +51,11 @@ public class ChangePasswordPageController {
         try {
             userService.changePassword(changePassword.getOldPassword(), changePassword.getNewPassword());
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE,
-                    messageSourceService.getMessage("emr.account.changePassword.success", null, Context.getLocale()));
+                    messageSourceService.getMessage("authenticationui.changePassword.success", null, Context.getLocale()));
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");
         } catch (Exception e) {
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE,
-                    messageSourceService.getMessage("emr.account.changePassword.fail", new Object[]{e.getMessage()}, Context.getLocale()));
+                    messageSourceService.getMessage("authenticationui.changePassword.fail", new Object[]{e.getMessage()}, Context.getLocale()));
             return "account/changePassword";
         }
 
@@ -64,15 +64,15 @@ public class ChangePasswordPageController {
 
     private void validatePasswords(ChangePassword changePassword, BindingResult errors, MessageSourceService messageSourceService) {
         if (StringUtils.isBlank(changePassword.getOldPassword())) {
-            errors.rejectValue("oldPassword", "emr.account.changePassword.oldPassword.required",
-                    new Object[]{messageSourceService.getMessage("emr.account.changePassword.oldPassword.required")}, null);
+            errors.rejectValue("oldPassword", "authenticationui.changePassword.oldPassword.required",
+                    new Object[]{messageSourceService.getMessage("authenticationui.changePassword.oldPassword.required")}, null);
         }
         if (StringUtils.isBlank(changePassword.getNewPassword()) || StringUtils.isBlank(changePassword.getConfirmPassword())) {
-            errors.rejectValue("newPassword", "emr.account.changePassword.newAndConfirmPassword.required",
-                    new Object[]{messageSourceService.getMessage("emr.account.changePassword.newAndConfirmPassword.required")}, null);
+            errors.rejectValue("newPassword", "authenticationui.changePassword.newAndConfirmPassword.required",
+                    new Object[]{messageSourceService.getMessage("authenticationui.changePassword.newAndConfirmPassword.required")}, null);
         } else if (!changePassword.getNewPassword().equals(changePassword.getConfirmPassword())) {
-            errors.rejectValue("", "emr.account.changePassword.newAndConfirmPassword.DoesNotMatch",
-                    new Object[]{messageSourceService.getMessage("emr.account.changePassword.newAndConfirmPassword.DoesNotMatch")}, null);
+            errors.rejectValue("", "authenticationui.changePassword.newAndConfirmPassword.doesNotMatch",
+                    new Object[]{messageSourceService.getMessage("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch")}, null);
         }
     }
 
