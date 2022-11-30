@@ -12,6 +12,7 @@ package org.openmrs.module.authenticationui;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -33,6 +34,7 @@ public class AuthenticationUiModuleConfig {
 	private boolean allowPasswordReset = false;
 	private String accountAdminPrivilege = PrivilegeConstants.EDIT_USERS;
 	private String phoneNumberPersonAttributeType = null;
+	private String defaultLocationUserProperty = OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION;
 
 	private AuthenticationUiModuleConfig() {
 	}
@@ -91,6 +93,10 @@ public class AuthenticationUiModuleConfig {
 		instance.phoneNumberPersonAttributeType = phoneNumberPersonAttributeType;
 	}
 
+	public void setDefaultLocationUserProperty(String defaultLocationUserProperty) {
+		instance.defaultLocationUserProperty = defaultLocationUserProperty;
+	}
+
 	// ***** instance getters
 
 	public String getHeaderLogoUrl(UiUtils ui) {
@@ -131,6 +137,10 @@ public class AuthenticationUiModuleConfig {
 
 	public String getPhoneNumberPersonAttributeType() {
 		return phoneNumberPersonAttributeType;
+	}
+
+	public String getDefaultLocationUserProperty() {
+		return defaultLocationUserProperty;
 	}
 
 	public String getPageDecoratorProvider() {

@@ -7,11 +7,18 @@
 
     def allowedLocalesOptions = []
     allowedLocales.each {
-        def displayLanguage = it.getDisplayLanguage(defaultLocale) == "Haitian" ? "Haitian Creole" : it.getDisplayLanguage(defaultLocale)
+        def displayLanguage = it.getDisplayLanguage(account.defaultLocale)
+        displayLanguage = (displayLanguage == "Haitian" ? "Haitian Creole" : displayLanguage)
         allowedLocalesOptions.push([ label: displayLanguage, value: it ]);
     }
 
-    def currentLocaleDisplay = defaultLocale.getDisplayLanguage(defaultLocale) == "Haitian" ? "Haitian Creole" : defaultLocale.getDisplayLanguage(defaultLocale)
+    def allowedDefaultLocations = []
+    locations.each {
+        allowedDefaultLocations.push([ label: it.name, value: it.id.toString() ])
+    }
+
+    def currentLocaleDisplay = account.defaultLocale.getDisplayLanguage(account.defaultLocale)
+    currentLocaleDisplay = (currentLocaleDisplay == "Haitian" ? "Haitian Creole" : currentLocaleDisplay)
 %>
 
 <style>
@@ -42,43 +49,57 @@
             ${ ui.includeFragment("uicommons", "field/text", [
                     label: ui.message("authenticationui.account.givenName"),
                     formFieldName: "givenName",
-                    initialValue: (givenName ?: '')
+                    initialValue: (account.givenName ?: '')
             ])}
 
             ${ ui.includeFragment("uicommons", "field/text", [
                     label: ui.message("authenticationui.account.familyName"),
                     formFieldName: "familyName",
-                    initialValue: (familyName ?: '')
+                    initialValue: (account.familyName ?: '')
             ])}
 
             ${ ui.includeFragment("uicommons", "field/radioButtons", [
                     label: ui.message("authenticationui.account.gender"),
                     formFieldName: "gender",
-                    initialValue: (gender ?: 'M'),
+                    initialValue: (account.gender ?: 'M'),
                     options: genderOptions
             ])}
 
             ${ ui.includeFragment("uicommons", "field/text", [
                     label: ui.message("authenticationui.account.email"),
                     formFieldName: "email",
-                    initialValue: (email ?: '')
+                    initialValue: (account.email ?: '')
             ])}
 
-            ${ ui.includeFragment("uicommons", "field/text", [
-                    label: ui.message("authenticationui.account.phoneNumber"),
-                    formFieldName: "phoneNumber",
-                    initialValue: (phoneNumber ?: '')
-            ])}
+            <% if (account.phoneNumberAttributeType) { %>
+                ${ ui.includeFragment("uicommons", "field/text", [
+                        label: ui.message("authenticationui.account.phoneNumber"),
+                        formFieldName: "phoneNumber",
+                        initialValue: (account.phoneNumber ?: '')
+                ])}
+            <% } %>
 
             <p>
                 ${ ui.includeFragment("uicommons", "field/dropDown", [
                         label: ui.message("authenticationui.account.defaultLocale"),
                         emptyOptionLabel: ui.message("authenticationui.action.chooseOne"),
                         formFieldName: "defaultLocale",
-                        initialValue: (defaultLocale ?: ''),
+                        initialValue: (account.defaultLocale ?: ''),
                         options: allowedLocalesOptions
                 ])}
             </p>
+
+            <% if (account.defaultLocationUserProperty) { %>
+                <p>
+                    ${ ui.includeFragment("uicommons", "field/dropDown", [
+                            label: ui.message("authenticationui.account.defaultLocation"),
+                            emptyOptionLabel: ui.message("authenticationui.action.chooseOne"),
+                            formFieldName: "defaultLocationId",
+                            initialValue: (account.defaultLocationId ?: ''),
+                            options: allowedDefaultLocations
+                    ])}
+                </p>
+            <% } %>
 
             <div>
                 <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/myAccount.page'" />
@@ -127,15 +148,15 @@
                                     </div>
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.account.givenName") }: </span>
-                                        <span class="account-info-value">${ givenName }</span>
+                                        <span class="account-info-value">${ account.givenName }</span>
                                     </div>
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.account.familyName") }: </span>
-                                        <span class="account-info-value">${ familyName }</span>
+                                        <span class="account-info-value">${ account.familyName }</span>
                                     </div>
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.account.gender") }: </span>
-                                        <span class="account-info-value">${ gender ? ui.message("authenticationui.account.gender." + gender) : "" }</span>
+                                        <span class="account-info-value">${ account.gender ? ui.message("authenticationui.account.gender." + account.gender) : "" }</span>
                                     </div>
                                 </div>
 
@@ -146,23 +167,30 @@
 
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.account.username") }: </span>
-                                        <span class="account-info-value">${ currentUser.username }</span>
+                                        <span class="account-info-value">${ account.user.username }</span>
                                     </div>
 
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.account.email") }: </span>
-                                        <span class="account-info-value">${ email ?: '' }</span>
+                                        <span class="account-info-value">${ account.email ?: '' }</span>
                                     </div>
 
-                                    <div class="account-info-item">
-                                        <span class="account-info-label">${ ui.message("authenticationui.account.phoneNumber") }: </span>
-                                        <span class="account-info-value">${ phoneNumber ?: '' }</span>
-                                    </div>
-
+                                    <% if (account.phoneNumberAttributeType) { %>
+                                        <div class="account-info-item">
+                                            <span class="account-info-label">${ ui.message("authenticationui.account.phoneNumber") }: </span>
+                                            <span class="account-info-value">${ account.phoneNumber ?: '' }</span>
+                                        </div>
+                                    <% } %>
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.account.defaultLocale") }: </span>
                                         <span class="account-info-value">${ currentLocaleDisplay }</span>
                                     </div>
+                                    <% if (account.defaultLocationUserProperty) { %>
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.account.defaultLocation") }: </span>
+                                        <span class="account-info-value">${ account.defaultLocationName ?: '' }</span>
+                                    </div>
+                                    <% } %>
                                 </div>
 
                             <% if (twoFactorAvailable) { %>
@@ -174,13 +202,13 @@
 
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.2fa.status") }: </span>
-                                        <span class="account-info-value">${ ui.message(twoFactorAuthenticationMethod ? "authenticationui.2fa.enabled" : "authenticationui.2fa.disabled") }</span>
+                                        <span class="account-info-value">${ ui.message(account.twoFactorAuthenticationMethod ? "authenticationui.2fa.enabled" : "authenticationui.2fa.disabled") }</span>
                                     </div>
 
-                                    <% if (twoFactorAuthenticationMethod) { %>
+                                    <% if (account.twoFactorAuthenticationMethod) { %>
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.2fa.method") }: </span>
-                                        <span class="account-info-value">${ ui.message("authenticationui." + twoFactorAuthenticationMethod + ".name") }</span>
+                                        <span class="account-info-value">${ ui.message("authenticationui." + account.twoFactorAuthenticationMethod + ".name") }</span>
                                     </div>
                                     <% } %>
                                 </div>
