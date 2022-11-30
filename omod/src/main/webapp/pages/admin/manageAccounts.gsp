@@ -1,5 +1,5 @@
 <%
-    ui.decorateWith("appui", "standardEmrPage", [title: ui.message("emr.task.accountManagement.label")])
+    ui.decorateWith("appui", "standardEmrPage", [title: ui.message("authenticationui.manageAccounts.title")])
 	ui.includeCss("authenticationui", "authentication.css", -50)
 	ui.includeCss("authenticationui", "account.css")
 %>
@@ -7,11 +7,11 @@
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' },
-        { label: "${ ui.message("emr.task.accountManagement.label")}" }
+        { label: "${ ui.message("authenticationui.manageAccounts.title")}" }
     ];
 </script>
 
-<h3>${  ui.message("emr.task.accountManagement.label") }</h3>
+<h3>${  ui.message("authenticationui.manageAccounts.title") }</h3>
 
 <div style="display:flex; justify-content: space-between;">
 	<div>

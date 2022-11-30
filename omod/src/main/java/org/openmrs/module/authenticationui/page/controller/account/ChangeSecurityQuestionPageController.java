@@ -5,11 +5,9 @@ import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
 import org.openmrs.module.uicommons.UiCommonsConstants;
-import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -70,7 +68,6 @@ public class ChangeSecurityQuestionPageController {
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @SpringBean("messageSource") MessageSource messageSource,
                        HttpServletRequest request,
-                       UiUtils ui,
                        PageModel model) {
 
         AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
@@ -165,7 +162,7 @@ public class ChangeSecurityQuestionPageController {
             }
 
             String returnUrl = (isOwnAccount ? "myAccount.page" : "account.page?personId=" + userToSetup.getPerson().getPersonId());
-            return "redirect:" + ui.pageLink("authenticationui", "account/" + returnUrl);
+            return "redirect:authenticationui/account/" + returnUrl;
         }
 
     }

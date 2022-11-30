@@ -1,5 +1,5 @@
 <%
-    ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authentication.2fa.title") ])
+    ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.configure2fa.title") ])
     ui.includeCss("authenticationui", "authentication.css", -50)
     def returnUrl = isOwnAccount ? "myAccount.page" : "account.page?personId=" + userToSetup.person.personId;
 %>
@@ -28,11 +28,11 @@
     <% if (isOwnAccount) { %>
         breadcrumbs.push({ label: "${ ui.message("authenticationui.myAccount.title")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' });
     <% } else { %>
-        breadcrumbs.push({ label: "${ ui.message("emr.app.systemAdministration.label")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' });
-        breadcrumbs.push({ label: "${ ui.message("emr.task.accountManagement.label")}" , link: '${ui.pageLink("authenticationui", "admin/manageAccounts")}'});
+        breadcrumbs.push({ label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' });
+        breadcrumbs.push({ label: "${ ui.message("authenticationui.manageAccounts.title")}" , link: '${ui.pageLink("authenticationui", "admin/manageAccounts")}'});
         breadcrumbs.push({ label: "${ ui.format(userToSetup.person) }", link: '${ui.pageLink("authenticationui", "account/account", [personId: userToSetup.person.personId])}' });
     <% } %>
-    breadcrumbs.push({ label: "${ ui.message("authentication.2fa.title")}" });
+    breadcrumbs.push({ label: "${ ui.message("authenticationui.configure2fa.title")}" });
 
     jQuery(function() {
         let nextButton = jQuery("#next-button");
@@ -50,23 +50,23 @@
 
 </script>
 
-<h3>${ui.message("authentication.2fa.title")}</h3>
+<h3>${ui.message("authenticationui.configure2fa.title")}</h3>
 <div>
     <% if (twoFactorAvailable) { %>
         <div class="section note-container">
             <% if (existingOption) { %>
                 <div class="note success">
-                    ${ui.message("authentication.2fa.accountEnabled")}
+                    ${ui.message("authenticationui.configure2fa.accountEnabled")}
                 </div>
             <% } else { %>
                 <div class="note error">
-                    ${ui.message("authentication.2fa.accountNotEnabled")}
+                    ${ui.message("authenticationui.configure2fa.accountNotEnabled")}
                 </div>
             <% } %>
         </div>
         <div>
             <div class="section" id="options-title">
-                ${ui.message("authentication.2fa.changeMethod")}
+                ${ui.message("authenticationui.configure2fa.changeMethod")}
             </div>
             <form id="options-form" method="post">
                 <% if (!isOwnAccount) { %>
@@ -76,9 +76,9 @@
                     <div class="option-choice">
                         <input id="empty-option" type="radio" name="schemeId" value="" <%= existingOption ? "" : "checked" %> />
                         <label for="empty-option">
-                            ${ ui.message("authentication.2fa.noneSelected") }
+                            ${ ui.message("authenticationui.configure2fa.noneSelected") }
                             <% if (!existingOption) { %>
-                                <span class="option-info">( ${ui.message("authentication.2fa.currentlySelected")} )</span>
+                                <span class="option-info">( ${ui.message("authenticationui.configure2fa.currentlySelected")} )</span>
                             <% } %>
                         </label>
                     </div>
@@ -87,9 +87,9 @@
                         <div class="option-choice">
                             <input id="option-${schemeId}" type="radio" name="schemeId" value="${schemeId}" <%= option.currentlySelected ? "checked" : "" %> />
                             <label for="option-${schemeId}">
-                                ${ ui.message("authentication." + schemeId + ".name") }
+                                ${ ui.message("authenticationui." + schemeId + ".name") }
                                 <% if (option.currentlySelected) { %>
-                                    <span class="option-info">( ${ui.message("authentication.2fa.currentlySelected")} )</span>
+                                    <span class="option-info">( ${ui.message("authenticationui.configure2fa.currentlySelected")} )</span>
                                 <% } %>
                             </label>
                         </div>
@@ -105,7 +105,7 @@
     <% } else { %>
         <div class="section note-container">
             <div class="note error">
-                <span class="text">${ ui.message("authentication.2fa.systemNotEnabled") }</span>
+                <span class="text">${ ui.message("authenticationui.configure2fa.systemNotEnabled") }</span>
             </div>
         </div>
     <% } %>

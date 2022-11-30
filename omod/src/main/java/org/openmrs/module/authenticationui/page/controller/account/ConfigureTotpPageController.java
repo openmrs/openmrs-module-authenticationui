@@ -10,7 +10,6 @@ import org.openmrs.module.authentication.web.TotpAuthenticationScheme;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
 import org.openmrs.module.uicommons.UiCommonsConstants;
-import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.Security;
@@ -64,7 +63,6 @@ public class ConfigureTotpPageController {
                        @SpringBean("userService") UserService userService,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        HttpServletRequest request,
-                       UiUtils ui,
                        PageModel model) {
 
         AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
@@ -118,6 +116,7 @@ public class ConfigureTotpPageController {
         }
 
         String returnUrl = (isOwnAccount ? "myAccount.page" : "account.page?personId=" + userToSetup.getPerson().getPersonId());
-        return "redirect:" + ui.pageLink("authenticationui", "account/" + returnUrl);
+        return "redirect:authenticationui/account/" + returnUrl;
+
     }
 }

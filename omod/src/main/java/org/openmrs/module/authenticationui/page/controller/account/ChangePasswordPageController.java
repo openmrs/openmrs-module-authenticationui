@@ -6,7 +6,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.uicommons.UiCommonsConstants;
-import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -34,7 +33,6 @@ public class ChangePasswordPageController {
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @SpringBean("messageSource") MessageSource messageSource,
                        HttpServletRequest request,
-                       UiUtils ui,
                        PageModel model) {
 
         validatePasswords(changePassword, errors, messageSourceService);
@@ -44,12 +42,12 @@ public class ChangePasswordPageController {
             model.addAttribute("errors", errors);
             return "account/changePassword";
         } else {
-            return changePasswords(changePassword, userService, messageSourceService, request, ui);
+            return changePasswords(changePassword, userService, messageSourceService, request);
         }
 
     }
 
-    private String changePasswords(ChangePassword changePassword, UserService userService, MessageSourceService messageSourceService, HttpServletRequest request, UiUtils ui) {
+    private String changePasswords(ChangePassword changePassword, UserService userService, MessageSourceService messageSourceService, HttpServletRequest request) {
         try {
             userService.changePassword(changePassword.getOldPassword(), changePassword.getNewPassword());
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE,
@@ -61,7 +59,7 @@ public class ChangePasswordPageController {
             return "account/changePassword";
         }
 
-        return "redirect:" + ui.pageLink("authenticationui", "account/myAccount.page");
+        return "redirect:authenticationui/account/myAccount.page";
     }
 
     private void validatePasswords(ChangePassword changePassword, BindingResult errors, MessageSourceService messageSourceService) {

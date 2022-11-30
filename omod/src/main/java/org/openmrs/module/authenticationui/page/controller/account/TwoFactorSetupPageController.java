@@ -11,7 +11,6 @@ import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authentication.web.WebAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
 import org.openmrs.module.uicommons.UiCommonsConstants;
-import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -77,7 +76,6 @@ public class TwoFactorSetupPageController {
                        @RequestParam(value = "schemeId", required = false) String schemeId,
                        @SpringBean("userService") UserService userService,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService,
-                       UiUtils ui,
                        HttpServletRequest request) {
 
         AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
@@ -111,7 +109,7 @@ public class TwoFactorSetupPageController {
                             if (!url.contains("{userId}")) {
                                 String msg = messageSourceService.getMessage("emr.user.unauthorizedPageError");
                                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
-                                return "redirect:" + ui.pageLink("authenticationui", "account/twoFactorSetup.page?userId=\" + userId");
+                                return "redirect:authenticationui/account/twoFactorSetup.page?userId=" + userId;
                             }
                             else {
                                 url = url.replace("{userId}", userToSetup.getUserId().toString());
@@ -136,12 +134,12 @@ public class TwoFactorSetupPageController {
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE, msg);
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");
             String returnPage = (isOwnAccount ? "myAccount.page" : "account.page?personId=" + userToSetup.getPerson().getPersonId());
-            return "redirect:" + ui.pageLink("authenticationui", "account/" + returnPage);
+            return "redirect:authenticationui/account/" + returnPage;
         }
         catch (Exception e) {
             String msg = messageSourceService.getMessage("authentication.2fa.error", new Object[]{e.getMessage()}, Context.getLocale());
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
-            return "redirect:" + ui.pageLink("authenticationui", "account/twoFactorSetup.page");
+            return "redirect:authenticationui/account/twoFactorSetup.page";
         }
     }
 

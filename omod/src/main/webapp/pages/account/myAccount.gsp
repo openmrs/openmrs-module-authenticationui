@@ -180,7 +180,7 @@
                                     <% if (twoFactorAuthenticationMethod) { %>
                                     <div class="account-info-item">
                                         <span class="account-info-label">${ ui.message("authenticationui.2fa.method") }: </span>
-                                        <span class="account-info-value">${ ui.message("authentication." + twoFactorAuthenticationMethod + ".name") }</span>
+                                        <span class="account-info-value">${ ui.message("authenticationui." + twoFactorAuthenticationMethod + ".name") }</span>
                                     </div>
                                     <% } %>
                                 </div>
