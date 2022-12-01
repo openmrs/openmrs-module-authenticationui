@@ -1,20 +1,13 @@
 <%
+    def accountTitle = ownAccount ? ui.message("authenticationui.myAccount.title") : ui.format(user.person)
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.changeSecretQuestion.title") ])
-    ui.includeCss("authenticationui", "authentication.css", -50)
     ui.includeCss("authenticationui", "account.css", -60)
-    def returnUrl = isOwnAccount ? "myAccount.page" : "account.page?personId=" + userToSetup.person.personId;
 %>
 
 <script type="text/javascript">
     var breadcrumbs = [];
     breadcrumbs.push({ icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' });
-    <% if (isOwnAccount) { %>
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.myAccount.title")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' });
-    <% } else { %>
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' });
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.manageAccounts.title")}" , link: '${ui.pageLink("authenticationui", "admin/manageAccounts")}'});
-        breadcrumbs.push({ label: "${ ui.format(userToSetup.person) }", link: '${ui.pageLink("authenticationui", "account/account", [personId: userToSetup.person.personId])}' });
-    <% } %>
+    breadcrumbs.push({ label: "${ accountTitle }", link: '${ui.pageLink("authenticationui", "account/account", [userId: user.id])}' });
     breadcrumbs.push({ label: "${ ui.message("authenticationui.changeSecretQuestion.title")}" });
 
     jQuery(function() {
@@ -31,7 +24,7 @@
             else {
                 jQuery("#confirmAnswerSection .field-error").text("").hide();
             }
-            if (question && (password || <%= !isOwnAccount %>) && answer && answer === confirmAnswer) {
+            if (question && (password || <%= !ownAccount %>) && answer && answer === confirmAnswer) {
                 saveButton.removeClass("disabled").removeAttr("disabled");
             }
             else {
@@ -53,6 +46,7 @@
 </div>
 
 <form method="post" id="changeSecurityQuestionForm">
+    <input type="hidden" name="userId" value="${user.id}"/>
     <fieldset>
         <p id="questionSection" class="emr_passwordDetails">
             <label class="form-header" for="question">${ ui.message("authenticationui.changeSecretQuestion.secretQuestion") }</label>
@@ -69,7 +63,7 @@
             <input type="password" id="confirmAnswer" name="confirmAnswer" autocomplete="off"/>
             ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "confirmAnswer" ])}
         </p>
-        <% if (isOwnAccount) { %>
+        <% if (ownAccount) { %>
             <p id="passwordSection" class="emr_passwordDetails">
                 <label class="form-header" for="password">${ ui.message("authenticationui.changeSecretQuestion.secretAnswerPassword") }</label>
                 <input type="password" id="password" name="password" autocomplete="off"/>
@@ -81,7 +75,7 @@
     </fieldset>
 
     <div>
-        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/${returnUrl}'" />
+        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/account.page?userId=${user.id}'" />
         <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
     </div>
 

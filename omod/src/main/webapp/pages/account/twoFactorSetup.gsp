@@ -1,7 +1,7 @@
 <%
+    def accountTitle = ownAccount ? ui.message("authenticationui.myAccount.title") : ui.format(user.person)
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.configure2fa.title") ])
-    ui.includeCss("authenticationui", "authentication.css", -50)
-    def returnUrl = isOwnAccount ? "myAccount.page" : "account.page?personId=" + userToSetup.person.personId;
+    ui.includeCss("authenticationui", "account.css", -60)
 %>
 
 <style>
@@ -25,13 +25,7 @@
 <script type="text/javascript">
     var breadcrumbs = [];
     breadcrumbs.push({ icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' });
-    <% if (isOwnAccount) { %>
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.myAccount.title")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' });
-    <% } else { %>
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' });
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.manageAccounts.title")}" , link: '${ui.pageLink("authenticationui", "admin/manageAccounts")}'});
-        breadcrumbs.push({ label: "${ ui.format(userToSetup.person) }", link: '${ui.pageLink("authenticationui", "account/account", [personId: userToSetup.person.personId])}' });
-    <% } %>
+    breadcrumbs.push({ label: "${ accountTitle }", link: '${ui.pageLink("authenticationui", "account/account", [userId: user.id])}' });
     breadcrumbs.push({ label: "${ ui.message("authenticationui.configure2fa.title")}" });
 
     jQuery(function() {
@@ -69,9 +63,7 @@
                 ${ui.message("authenticationui.configure2fa.changeMethod")}
             </div>
             <form id="options-form" method="post">
-                <% if (!isOwnAccount) { %>
-                    <input type="hidden" name="userId" value="${userToSetup.userId}"/>
-                <% } %>
+                <input type="hidden" name="userId" value="${user.userId}"/>
                 <div id="options-choices">
                     <div class="option-choice">
                         <input id="empty-option" type="radio" name="schemeId" value="" <%= existingOption ? "" : "checked" %> />
@@ -96,7 +88,7 @@
                     <% } %>
                 </div>
                 <div>
-                    <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/${ returnUrl }'" />
+                    <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/account.page?userId=${user.id}'" />
                     <input type="submit" class="confirm" id="next-button" value="${ ui.message("emr.next") }"  />
                 </div>
             </form>

@@ -1,20 +1,13 @@
 <%
+    def accountTitle = ownAccount ? ui.message("authenticationui.myAccount.title") : ui.format(user.person)
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.configureTotp.title") ])
-    ui.includeCss("authenticationui", "authentication.css", -50)
     ui.includeCss("authenticationui", "account.css", -60)
-    def returnUrl = isOwnAccount ? "myAccount.page" : "account.page?personId=" + userToSetup.person.personId;
 %>
 
 <script type="text/javascript">
     var breadcrumbs = [];
     breadcrumbs.push({ icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' });
-    <% if (isOwnAccount) { %>
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.myAccount.title")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' });
-    <% } else { %>
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' });
-        breadcrumbs.push({ label: "${ ui.message("authenticationui.manageAccounts.title")}" , link: '${ui.pageLink("authenticationui", "admin/manageAccounts")}'});
-        breadcrumbs.push({ label: "${ ui.format(userToSetup.person) }", link: '${ui.pageLink("authenticationui", "account/account", [personId: userToSetup.person.personId])}' });
-    <% } %>
+    breadcrumbs.push({ label: "${ accountTitle }", link: '${ui.pageLink("authenticationui", "account/account", [userId: user.id])}' });
     breadcrumbs.push({ label: "${ ui.message("authenticationui.configureTotp.title")}" });
 </script>
 
@@ -29,6 +22,7 @@
 </div>
 
 <form method="post" id="totpVerificationForm">
+    <input type="hidden" name="userId" value="${user.id}"/>
     <fieldset>
         <div>
             <img src="${qrCodeUri}" />
@@ -40,7 +34,7 @@
         </div>
     </fieldset>
     <div>
-        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/${returnUrl}'" />
+        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/account.page?userId=${user.id}'" />
         <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
     </div>
 </form>

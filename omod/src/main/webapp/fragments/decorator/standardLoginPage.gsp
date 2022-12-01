@@ -18,8 +18,6 @@
 
     // simplemodal plugin: http://www.ericmmartin.com/projects/simplemodal/
     ui.includeJavascript("uicommons", "jquery.simplemodal.1.4.4.min.js", Integer.MAX_VALUE - 20)
-
-    ui.includeCss("authenticationui", "authentication.css", Integer.MAX_VALUE - 20)
 %>
 <!DOCTYPE html>
 <html>

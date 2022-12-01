@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.openmrs.util.PrivilegeConstants.GET_USERS;
 
-public class ResetPasswordPageController {
+public class ResetPasswordPageController extends AbstractAccountPageController {
 
     protected final Log log = LogFactory.getLog(getClass());
 
@@ -30,8 +30,7 @@ public class ResetPasswordPageController {
             Context.addProxyPrivilege(GET_USERS);
             User user = userService.getUserByActivationKey(activationKey);
             if (user == null) {
-                request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE,
-                        ui.message("activation.key.not.correct", null, Context.getLocale()));
+                request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, getMessage("activation.key.not.correct"));
                 return "redirect:index.htm";
             }
             Context.setLocale(userService.getDefaultLocaleForUser(user));

@@ -1,6 +1,6 @@
 <%
     ui.decorateWith("appui", "standardEmrPage", [title: ui.message("authenticationui.activeUsers.title")])
-    ui.includeCss("authenticationui", "authentication.css", -50)
+	ui.includeCss("authenticationui", "account.css", -60)
 %>
 <script type="text/javascript">
     var breadcrumbs = [

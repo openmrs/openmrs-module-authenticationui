@@ -1,121 +1,101 @@
 package org.openmrs.module.authenticationui.page.controller.account;
 
 
-import org.apache.commons.lang.StringUtils;
+import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
-import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
-public class ChangePasswordPageController {
+public class ChangePasswordPageController extends AbstractAccountPageController {
 
-    public ChangePassword getChangePassword(@RequestParam(value = "oldPassword", required = false) String oldPassword,
+    public ChangePassword getChangePassword(@RequestParam(value = "userId", required = false) Integer userId,
+                                            @RequestParam(value = "oldPassword", required = false) String oldPassword,
                                             @RequestParam(value = "newPassword", required = false) String newPassword,
-                                            @RequestParam(value = "confirmPassword", required = false) String confirmPassword) {
-        return new ChangePassword(oldPassword, newPassword, confirmPassword);
+                                            @RequestParam(value = "confirmPassword", required = false) String confirmPassword,
+                                            @SpringBean("userService") UserService userService) {
+
+        userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
+        User user = userService.getUser(userId);
+        return new ChangePassword(user, oldPassword, newPassword, confirmPassword);
     }
 
+    public String get(@MethodParam("getChangePassword") @BindParams ChangePassword changePassword,
+                      PageModel model) {
+
+        try {
+            checkPermissionAndAddToModel(changePassword.getUser(), model);
+        }
+        catch (Exception e) {
+            return "redirect:/index.htm";
+        }
+
+        return "account/changePassword";
+    }
 
     public String post(@MethodParam("getChangePassword") @BindParams ChangePassword changePassword,
                        BindingResult errors,
                        @SpringBean("userService") UserService userService,
-                       @SpringBean("messageSourceService") MessageSourceService messageSourceService,
-                       @SpringBean("messageSource") MessageSource messageSource,
                        HttpServletRequest request,
                        PageModel model) {
 
-        validatePasswords(changePassword, errors, messageSourceService);
+        boolean ownAccount = (changePassword.getUser().equals(Context.getAuthenticatedUser()));
 
-        if (errors.hasErrors()) {
-            sendErrorMessage(errors, messageSource, request);
-            model.addAttribute("errors", errors);
-            return "account/changePassword";
-        } else {
-            return changePasswords(changePassword, userService, messageSourceService, request);
+        if (ownAccount) {
+            requireField(errors, "oldPassword", changePassword.getOldPassword(), "authenticationui.changePassword.oldPassword");
+        }
+        requireField(errors, "newPassword", changePassword.getNewPassword(), "authenticationui.changePassword.newPassword");
+        requireField(errors, "confirmPassword", changePassword.getConfirmPassword(), "authenticationui.changePassword.confirmPassword");
+
+        if (!changePassword.getNewPassword().equals(changePassword.getConfirmPassword())) {
+            rejectValue(errors, "confirmPassword", "authenticationui.changePassword.newAndConfirmPassword.doesNotMatch");
         }
 
-    }
-
-    private String changePasswords(ChangePassword changePassword, UserService userService, MessageSourceService messageSourceService, HttpServletRequest request) {
-        try {
-            userService.changePassword(changePassword.getOldPassword(), changePassword.getNewPassword());
-            request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE,
-                    messageSourceService.getMessage("authenticationui.changePassword.success", null, Context.getLocale()));
-            request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");
-        } catch (Exception e) {
-            request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE,
-                    messageSourceService.getMessage("authenticationui.changePassword.fail", new Object[]{e.getMessage()}, Context.getLocale()));
-            return "account/changePassword";
-        }
-
-        return "redirect:authenticationui/account/myAccount.page";
-    }
-
-    private void validatePasswords(ChangePassword changePassword, BindingResult errors, MessageSourceService messageSourceService) {
-        if (StringUtils.isBlank(changePassword.getOldPassword())) {
-            errors.rejectValue("oldPassword", "authenticationui.changePassword.oldPassword.required",
-                    new Object[]{messageSourceService.getMessage("authenticationui.changePassword.oldPassword.required")}, null);
-        }
-        if (StringUtils.isBlank(changePassword.getNewPassword()) || StringUtils.isBlank(changePassword.getConfirmPassword())) {
-            errors.rejectValue("newPassword", "authenticationui.changePassword.newAndConfirmPassword.required",
-                    new Object[]{messageSourceService.getMessage("authenticationui.changePassword.newAndConfirmPassword.required")}, null);
-        } else if (!changePassword.getNewPassword().equals(changePassword.getConfirmPassword())) {
-            errors.rejectValue("", "authenticationui.changePassword.newAndConfirmPassword.doesNotMatch",
-                    new Object[]{messageSourceService.getMessage("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch")}, null);
-        }
-    }
-
-    public String get() {
-        return "account/changePassword";
-    }
-
-    private void sendErrorMessage(BindingResult errors, MessageSource messageSource, HttpServletRequest request) {
-        List<ObjectError> allErrors = errors.getAllErrors();
-        String message = getMessageErrors(messageSource, allErrors);
-        request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE,
-                message);
-    }
-
-    private String getMessageErrors(MessageSource messageSource, List<ObjectError> allErrors) {
-        String message = "";
-        for (ObjectError error : allErrors) {
-            Object[] arguments = error.getArguments();
-            String errorMessage = messageSource.getMessage(error.getCode(), arguments, Context.getLocale());
-            message = message.concat(replaceArguments(errorMessage, arguments).concat("<br>"));
-        }
-        return message;
-    }
-
-    private String replaceArguments(String message, Object[] arguments) {
-        if (arguments != null) {
-            for (int i = 0; i < arguments.length; i++) {
-                String argument = (String) arguments[i];
-                message = message.replaceAll("\\{" + i + "\\}", argument);
+        if (!errors.hasErrors()) {
+            try {
+                checkPermissionAndAddToModel(changePassword.getUser(), model);
+                if (ownAccount) {
+                    userService.changePassword(changePassword.getOldPassword(), changePassword.getNewPassword());
+                }
+                else {
+                    userService.changePassword(changePassword.getUser(), changePassword.getNewPassword());
+                }
+                setSuccessMessage(request, "authenticationui.changePassword.success");
+                return "redirect:authenticationui/account/account.page?userId=" + changePassword.getUser().getId();
+            }
+            catch (Exception e) {
+                sendErrorMessage("authenticationui.changePassword.fail", e, request);
             }
         }
-        return message;
+        else {
+            model.addAttribute("errors", errors);
+            sendErrorMessage(errors, request);
+        }
+
+        return get(changePassword, model);
     }
 
-    private class ChangePassword {
+    private static class ChangePassword {
+        private final User user;
         private final String oldPassword;
         private final String newPassword;
         private final String confirmPassword;
 
-        public ChangePassword(String oldPassword, String newPassword, String confirmPassword) {
+        public ChangePassword(User user, String oldPassword, String newPassword, String confirmPassword) {
+            this.user = user;
             this.oldPassword = oldPassword;
             this.newPassword = newPassword;
             this.confirmPassword = confirmPassword;
+        }
+
+        public User getUser() {
+            return user;
         }
 
         public String getConfirmPassword() {

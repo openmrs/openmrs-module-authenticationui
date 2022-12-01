@@ -1,6 +1,6 @@
 <%
+    def accountTitle = ownAccount ? ui.message("authenticationui.myAccount.title") : ui.format(user.person)
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.changePassword.title") ])
-    ui.includeCss("authenticationui", "authentication.css", -50)
     ui.includeCss("authenticationui", "account.css", -60)
     ui.includeJavascript("authenticationui", "changePassword.js")
 %>
@@ -8,7 +8,7 @@
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("authenticationui.myAccount.title")}", link: '${ui.pageLink("authenticationui", "account/myAccount")}' },
+        { label: "${ accountTitle }", link: '${ui.pageLink("authenticationui", "account/account", [userId: user.id])}' },
         { label: "${ ui.message("authenticationui.changePassword.title")}" }
     ];
     var errorMessageOldPassword = "${ui.message("authenticationui.changePassword.oldPassword.required")}";
@@ -19,12 +19,15 @@
 <h3>${ui.message("authenticationui.changePassword.title")}</h3>
 
 <form method="post" id="accountForm">
+    <input type="hidden" name="userId" value="${user.id}"/>
     <fieldset>
-        <p id="oldPasswordSection" class="emr_passwordDetails">
-            <label class="form-header" for="oldPassword">${ ui.message("authenticationui.changePassword.oldPassword") }</label>
-            <input type="password" id="oldPassword" name="oldPassword"  autocomplete="off"/>
-            ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "oldPassword" ])}
-        </p>
+        <% if (ownAccount) { %>
+            <p id="oldPasswordSection" class="emr_passwordDetails">
+                <label class="form-header" for="oldPassword">${ ui.message("authenticationui.changePassword.oldPassword") }</label>
+                <input type="password" id="oldPassword" name="oldPassword"  autocomplete="off"/>
+                ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "oldPassword" ])}
+            </p>
+        <% } %>
         <p id="newPasswordSection" class="emr_passwordDetails">
             <label class="form-header" for="newPassword">${ ui.message("authenticationui.changePassword.newPassword") }</label>
             <input type="password" id="newPassword" name="newPassword"  autocomplete="off"/>
@@ -39,7 +42,7 @@
     </fieldset>
 
     <div>
-        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="javascript:window.location='/${ contextPath }/authenticationui/account/myAccount.page'" />
+        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="javascript:window.location='/${ contextPath }/authenticationui/account/account.page?userId=${user.id}'" />
         <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
     </div>
 

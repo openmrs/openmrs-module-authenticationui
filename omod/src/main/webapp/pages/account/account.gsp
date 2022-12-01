@@ -1,208 +1,282 @@
 <%
-    ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.account.title") ])
-    ui.includeCss("authenticationui", "authentication.css", -50)
+    def accountTitle = ownAccount ? ui.message("authenticationui.myAccount.title") : ui.format(account.user.person)
+    ui.decorateWith("appui", "standardEmrPage", [ title: accountTitle ])
     ui.includeCss("authenticationui", "account.css", -60)
 
-    def createAccount = (account.person.personId == null);
-
-    def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
-                          [label: ui.message("emr.gender.F"), value: 'F'] ]
+    def genderOptions = [ [label: ui.message("authenticationui.account.gender.M"), value: 'M'],
+                          [label: ui.message("authenticationui.account.gender.F"), value: 'F'] ]
 
     def allowedLocalesOptions = []
     allowedLocales.each {
-        def displayLanguage = it.getDisplayLanguage(emrContext.userContext.locale);
-        if (displayLanguage == "Haitian") { displayLanguage = "Haitian Creole" };  // Hack to fix the fact that ISO standard lists Creole as "Haitian"
+        def displayLanguage = it.getDisplayLanguage(account.defaultLocale)
+        displayLanguage = (displayLanguage == "Haitian" ? "Haitian Creole" : displayLanguage)
         allowedLocalesOptions.push([ label: displayLanguage, value: it ]);
     }
 
-    def providerRolesOptions = []
-    providerRoles. each {
-        providerRolesOptions.push([ label: ui.format(it), value: it.id ])
+    def allowedDefaultLocations = []
+    locations.each {
+        allowedDefaultLocations.push([ label: it.name, value: it.id.toString() ])
     }
-    providerRolesOptions = providerRolesOptions.sort { it.label }
 
-    def cancelUrl = createAccount ? "authenticationui/admin/manageAccounts.page" : "/authenticationui/account/account.page?personId=${account.person.personId}"
+    def currentLocaleDisplay = account.defaultLocale.getDisplayLanguage(account.defaultLocale)
+    currentLocaleDisplay = (currentLocaleDisplay == "Haitian" ? "Haitian Creole" : currentLocaleDisplay)
 %>
+
+<style>
+    .task {
+        display: block;
+        text-align: center;
+    }
+    .task img {
+        margin: auto;
+        vertical-align: middle;
+    }
+</style>
 
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' },
-        { label: "${ ui.message("authenticationui.manageAccounts.title")}" , link: '${ui.pageLink("authenticationui", "admin/manageAccounts")}'},
-        { label: "${ createAccount ? ui.message("emr.createAccount") : ui.format(account.person) }" }
+        { label: "${ accountTitle }" }
     ];
-
-    function emr_createProviderAccount(){
-        jQuery('.emr_providerDetails').toggle();
-        jQuery('#providerEnabled-field').attr('checked','checked');
-        jQuery("#providerIdentifier").focus();
-    }
-    function emr_createUserAccount(){
-        jQuery('.emr_passwordDetails').show();
-        jQuery('.emr_userDetails').toggle();
-        jQuery('#userEnabled-field').attr('checked','checked');
-        jQuery("#username").focus();
-    }
-
-    jq(function() {
-
-        jq("input.confirm").removeAttr("disabled");
-
-        jq('#unlock-button').click(function(e) {
-
-            jq.post(emr.fragmentActionLink("authenticationui", "account/account", "unlock", { personId: jq(this).val() }), function (data) {
-                emr.successMessage(data.message);
-                jq('#locked-warning').hide();
-            }, 'json').error(function(xhr) {
-                emr.handleError(xhr);
-            }       );
-        });
-
-        jq('input.confirm').click(function(){
-
-            if (!jq(this).attr("disabled")) {
-                jq(this).closest("form").submit();
-            }
-
-            jq(this).attr('disabled', 'disabled');
-            jq(this).addClass("disabled");
-
-        });
-    });
 </script>
 
-<h3>${ createAccount ? ui.message("emr.createAccount") : ui.format(account.person) }</h3>
+<h2>${ accountTitle }</h2>
 
-<% if (editMode) { %>
-    <form method="post" id="accountForm" autocomplete="off">
+<div class="account-section">
+    <% if (editMode) { %>
 
-        <!-- dummy fields so that Chrome doesn't autocomplete the real username/password fields with the users own password -->
-        <input style="display:none" type="text" name="wrong-username-from-autocomplete"/>
-        <input style="display:none" type="password" name="wrong-username-from-autocomplete"/>
-
-        <fieldset>
-            <legend>${ ui.message("emr.person.details") }</legend>
+        <form method="post" id="accountForm" autocomplete="off">
 
             ${ ui.includeFragment("uicommons", "field/text", [
-                label: ui.message("emr.person.familyName"),
-                formFieldName: "familyName",
-                initialValue: (account.familyName ?: '')
-            ])}
-
-            ${ ui.includeFragment("uicommons", "field/text", [
-                    label: ui.message("emr.person.givenName"),
+                    label: ui.message("authenticationui.account.givenName"),
                     formFieldName: "givenName",
                     initialValue: (account.givenName ?: '')
             ])}
 
-            ${ ui.includeFragment("uicommons", "field/radioButtons", [
-                label: ui.message("emr.gender"),
-                formFieldName: "gender",
-                initialValue: (account.gender ?: 'M'),
-                options: genderOptions
+            ${ ui.includeFragment("uicommons", "field/text", [
+                    label: ui.message("authenticationui.account.familyName"),
+                    formFieldName: "familyName",
+                    initialValue: (account.familyName ?: '')
             ])}
 
-        </fieldset>
+            ${ ui.includeFragment("uicommons", "field/radioButtons", [
+                    label: ui.message("authenticationui.account.gender"),
+                    formFieldName: "gender",
+                    initialValue: (account.gender ?: 'M'),
+                    options: genderOptions
+            ])}
 
-        <fieldset>
-            <legend>${ ui.message("emr.user.account.details") }</legend>
-            <div class="emr_userDetails" <% if (!account.user) { %> style="display: none" <% } %>>
+            ${ ui.includeFragment("uicommons", "field/text", [
+                    label: ui.message("authenticationui.account.email"),
+                    formFieldName: "email",
+                    initialValue: (account.email ?: '')
+            ])}
 
-                ${ ui.includeFragment("pihcore", "field/checkbox", [
-                    label: ui.message("emr.user.enabled"),
-                    id: "userEnabled",
-                    formFieldName: "userEnabled",
-                    value: "true",
-                    checked: account.userEnabled
-                ])}
-
+            <% if (account.phoneNumberAttributeType) { %>
                 ${ ui.includeFragment("uicommons", "field/text", [
-                    label: ui.message("emr.user.username"),
-                    formFieldName: "username",
-                    initialValue: (account.username ?: '')
-                ])}
-
-                <% if (!account.password && !account.confirmPassword) { %>
-                    <button class="emr_passwordDetails emr_userDetails" type="button" onclick="javascript:jQuery('.emr_passwordDetails').toggle()">${ ui.message("emr.user.changeUserPassword") }</button>
-                    <p></p>
-                <% } %>
-
-                <p class="emr_passwordDetails" <% if(!account.password && !account.confirmPassword) { %>style="display: none"<% } %>>
-                    <label class="form-header" for="password">${ ui.message("emr.user.password") }</label>
-                    <input type="password" id="password" name="password" value="${ account.password ?: ''}" autocomplete="off"/>
-                    <label id="format-password">${ ui.message("emr.account.passwordFormat") }</label>
-                    ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "password" ])}
-                </p>
-
-                <p class="emr_passwordDetails" <% if(!account.password && !account.confirmPassword) { %>style="display: none"<% } %>>
-                    <label class="form-header" for="confirmPassword">${ ui.message("emr.user.confirmPassword") }</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" value="${ account.confirmPassword ?: '' }" autocomplete="off" />
-                    ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "confirmPassword" ])}
-                </p>
-
-                ${ ui.includeFragment("uicommons", "field/text", [
-                        label: ui.message("emr.person.email"),
-                        formFieldName: "email",
-                        initialValue: (account.email ?: '')
-                ])}
-
-                ${ ui.includeFragment("uicommons", "field/text", [
-                        label: ui.message("emr.person.phoneNumber"),
+                        label: ui.message("authenticationui.account.phoneNumber"),
                         formFieldName: "phoneNumber",
                         initialValue: (account.phoneNumber ?: '')
                 ])}
+            <% } %>
 
-                <p>
-                    ${ ui.includeFragment("uicommons", "field/dropDown", [
-                        label: ui.message("emr.user.defaultLocale"),
-                        emptyOptionLabel: ui.message("emr.chooseOne"),
+            <p>
+                ${ ui.includeFragment("uicommons", "field/dropDown", [
+                        label: ui.message("authenticationui.account.defaultLocale"),
+                        emptyOptionLabel: ui.message("authenticationui.action.chooseOne"),
                         formFieldName: "defaultLocale",
                         initialValue: (account.defaultLocale ?: ''),
                         options: allowedLocalesOptions
-                    ])}
-                </p>
+                ])}
+            </p>
 
-                <p>
-                    <strong>${ ui.message("emr.user.Capabilities") }</strong>
-                </p>
-
-                <% capabilities.sort { ui.format(it).toLowerCase() }.each{ %>
-                    ${ ui.includeFragment("pihcore", "field/checkbox", [
-                        label: ui.format(it),
-                        formFieldName: "capabilities",
-                        value: it.name,
-                        checked: account.capabilities?.contains(it)
-                    ])}
-                <% } %>
-            </div>
-            <div class="emr_userDetails">
-                <% if(!account.user) { %>
-                    <button id="createUserAccountButton" type="button" onclick="javascript:emr_createUserAccount()"> ${ ui.message("emr.user.createUserAccount") }</button>
-                <% } %>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>${ ui.message("emr.provider.details") }</legend>
-            <div class="emr_providerDetails">
+            <% if (account.defaultLocationUserProperty) { %>
                 <p>
                     ${ ui.includeFragment("uicommons", "field/dropDown", [
-                            label: ui.message("emr.account.providerRole.label"),
-                            emptyOptionLabel: ui.message("emr.chooseOne"),
-                            formFieldName: "providerRole",
-                            initialValue: (account.providerRole?.id ?: ''),
-                            options: providerRolesOptions
+                            label: ui.message("authenticationui.account.defaultLocation"),
+                            emptyOptionLabel: ui.message("authenticationui.action.chooseOne"),
+                            formFieldName: "defaultLocationId",
+                            initialValue: (account.defaultLocationId ?: ''),
+                            options: allowedDefaultLocations
                     ])}
                 </p>
+            <% } %>
+
+            <div>
+                <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/account.page?userId=${account.user.id}'" />
+                <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
             </div>
-        </fieldset>
+        </form>
 
-        <div>
-            <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="javascript:window.location='/${ contextPath }/${cancelUrl}'" />
-            <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
+    <% } else { %>
+
+        <style>
+            .account-info-item {
+                display: table-row;
+            }
+            .account-info-label {
+                display: table-cell;
+                font-weight: bold;
+                padding-right: 20px;
+                white-space: nowrap;
+            }
+            .account-info-value {
+                display: table-cell;
+                white-space: nowrap;
+            }
+            .float-left {
+                float: left;
+                clear: left;
+                width: 97.91666%;
+            }
+            .warning {
+                width: 100%;
+                background-color: yellow;
+                padding: 10px;
+            }
+        </style>
+
+        <div class="account-section">
+            <div id="content" class="container-fluid">
+                <div class="dashboard clear row">
+                    <div class="col-12 col-lg-8">
+                        <div class="row">
+                            <div class="col-12 col-lg-12">
+
+                                <div class="info-section">
+                                    <div class="info-header">
+                                        <h3>${ ui.message("authenticationui.account.personDetails") }</h3>
+                                    </div>
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.account.givenName") }: </span>
+                                        <span class="account-info-value">${ account.givenName }</span>
+                                    </div>
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.account.familyName") }: </span>
+                                        <span class="account-info-value">${ account.familyName }</span>
+                                    </div>
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.account.gender") }: </span>
+                                        <span class="account-info-value">${ account.gender ? ui.message("authenticationui.account.gender." + account.gender) : "" }</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-section">
+                                    <div class="info-header">
+                                        <h3>${ ui.message("authenticationui.account.userDetails") }</h3>
+                                    </div>
+
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.account.username") }: </span>
+                                        <span class="account-info-value">${ account.user.username }</span>
+                                    </div>
+
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.account.email") }: </span>
+                                        <span class="account-info-value">${ account.email ?: '' }</span>
+                                    </div>
+
+                                    <% if (account.phoneNumberAttributeType) { %>
+                                        <div class="account-info-item">
+                                            <span class="account-info-label">${ ui.message("authenticationui.account.phoneNumber") }: </span>
+                                            <span class="account-info-value">${ account.phoneNumber ?: '' }</span>
+                                        </div>
+                                    <% } %>
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.account.defaultLocale") }: </span>
+                                        <span class="account-info-value">${ currentLocaleDisplay }</span>
+                                    </div>
+                                    <% if (account.defaultLocationUserProperty) { %>
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.account.defaultLocation") }: </span>
+                                        <span class="account-info-value">${ account.defaultLocationName ?: '' }</span>
+                                    </div>
+                                    <% } %>
+                                </div>
+
+                            <% if (twoFactorAvailable) { %>
+
+                                <div class="info-section">
+                                    <div class="info-header">
+                                        <h3>${ ui.message("authenticationui.account.2fa") }</h3>
+                                    </div>
+
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.2fa.status") }: </span>
+                                        <span class="account-info-value">${ ui.message(account.twoFactorAuthenticationMethod ? "authenticationui.2fa.enabled" : "authenticationui.2fa.disabled") }</span>
+                                    </div>
+
+                                    <% if (account.twoFactorAuthenticationMethod) { %>
+                                    <div class="account-info-item">
+                                        <span class="account-info-label">${ ui.message("authenticationui.2fa.method") }: </span>
+                                        <span class="account-info-value">${ ui.message("authenticationui." + account.twoFactorAuthenticationMethod + ".name") }</span>
+                                    </div>
+                                    <% } %>
+                                </div>
+
+                            <% } %>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard col-12 col-lg-4 p-0">
+                    <div class="action-section">
+                        <ul class="float-left">
+                            <h3 >${ ui.message("authenticationui.actions") }</h3>
+                            <li class="float-left">
+                                <a class="float-left" href="${ui.pageLink("authenticationui", "account/account", [ edit: true, userId: user.id ])}">
+                                    <div class="row">
+                                        <div class="col-1 col-lg-2">
+                                            <i class="fas fa-fw fa-user"></i>
+                                        </div>
+                                        <div class="col-11 col-lg-10">
+                                            ${ ui.message("authenticationui.action.editAccount") }
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="float-left">
+                                <a class="float-left" href="${ ui.pageLink("authenticationui", "account/changePassword", [userId: user.id]) }">
+                                    <div class="row">
+                                        <div class="col-1 col-lg-2">
+                                            <i class="fas fa-fw fa-lock"></i>
+                                        </div>
+                                        <div class="col-11 col-lg-10">
+                                            ${ ui.message("authenticationui.action.changePassword") }
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="float-left">
+                                <a class="float-left" href="${ ui.pageLink("authenticationui", "account/changeSecurityQuestion", [userId: user.id]) }">
+                                    <div class="row">
+                                        <div class="col-1 col-lg-2">
+                                            <i class="fas fa-fw fa-question"></i>
+                                        </div>
+                                        <div class="col-11 col-lg-10">
+                                            ${ ui.message("authenticationui.action.changeSecretQuestion") }
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="float-left">
+                                <a class="float-left" href="${ ui.pageLink("authenticationui", "account/twoFactorSetup", [userId: user.id]) }">
+                                    <div class="row">
+                                        <div class="col-1 col-lg-2">
+                                            <i class="fas fa-fw fa-user-lock"></i>
+                                        </div>
+                                        <div class="col-11 col-lg-10">
+                                            ${ ui.message("authenticationui.action.change2fa") }
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-
-    </form>
-<% } else { %>
-    ${ ui.includeFragment("authenticationui", "account/viewAccount", [ person: account.person ])}
+    </div>
 <% } %>
+
+</div>

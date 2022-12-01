@@ -31,7 +31,6 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
-import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -40,36 +39,46 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Locale;
 
-public class MyAccountPageController {
+public class AccountPageController extends AbstractAccountPageController {
 
     protected final Log log = LogFactory.getLog(getClass());
 
-    public Account getAccount(@SpringBean("userService") UserService userService,
+    public Account getAccount(@RequestParam(value = "userId", required = false) Integer userId,
+                              @SpringBean("userService") UserService userService,
                               @SpringBean("personService") PersonService personService,
                               @SpringBean("locationService") LocationService locationService) {
-        User user = userService.getUser(Context.getAuthenticatedUser().getUserId());
+
+        userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
+        User user = userService.getUser(userId);
         return new Account(user, personService, locationService);
     }
 
-    public void get(PageModel model,
+    public String get(PageModel model,
                     @MethodParam("getAccount") @BindParams Account account,
                     @RequestParam(value = "edit", required = false) Boolean edit,
                     @SpringBean("locationService") LocationService locationService,
                     @SpringBean("adminService") AdministrationService administrationService) {
 
+        try {
+            checkPermissionAndAddToModel(account.getUser(), model);
+        }
+        catch (Exception e) {
+            return "redirect:/index.htm";
+        }
+
         boolean twoFactorAvailable = AuthenticationConfig.getAuthenticationScheme() instanceof TwoFactorAuthenticationScheme;
+
         model.addAttribute("account", account);
         model.addAttribute("allowedLocales", administrationService.getAllowedLocales());
         model.addAttribute("editMode", edit == Boolean.TRUE);
         model.addAttribute("twoFactorAvailable", twoFactorAvailable);
         model.addAttribute("locations", locationService.getAllLocations());
+        return "account/account";
     }
 
     public String post(@MethodParam("getAccount") @BindParams Account account, BindingResult errors,
@@ -82,31 +91,19 @@ public class MyAccountPageController {
                        PageModel model,
                        HttpServletRequest request) {
 
-        User user = userService.getUser(Context.getAuthenticatedUser().getUserId());
+        requireField(errors, "givenName", account.getGivenName(), "authenticationui.account.givenName");
+        requireField(errors, "familyName", account.getFamilyName(), "authenticationui.account.familyName");
+        requireField(errors, "gender", account.getGender(), "authenticationui.account.gender");
 
-        if (StringUtils.isBlank(account.getGivenName())) {
-            errors.rejectValue("givenName", "error.required",
-                    new Object[]{messageSourceService.getMessage("authenticationui.account.givenName")}, null);
-        }
-        if (StringUtils.isBlank(account.getFamilyName())) {
-            errors.rejectValue("familyName", "error.required",
-                    new Object[]{messageSourceService.getMessage("authenticationui.account.familyName")}, null);
-        }
-        if (StringUtils.isBlank(account.getGender())) {
-            errors.rejectValue("gender", "error.required",
-                    new Object[]{messageSourceService.getMessage("authenticationui.account.gender")}, null);
-        }
         if (StringUtils.isNotBlank(account.getEmail())) {
             if (!EmailValidator.getInstance().isValid(account.getEmail())) {
                 errors.rejectValue("email", "error.email.invalid");
             }
             else {
-                if (!account.getEmail().equalsIgnoreCase(user.getEmail())) {
-                    User existingUser = userService.getUserByUsernameOrEmail(account.getEmail());
-                    if (existingUser != null && !existingUser.equals(user)) {
-                        if (account.getEmail().equalsIgnoreCase(existingUser.getEmail())) {
-                            errors.rejectValue("email", "authenticationui.account.error.emailAlreadyInUse");
-                        }
+                User existingUser = userService.getUserByUsernameOrEmail(account.getEmail());
+                if (existingUser != null && !existingUser.equals(account.getUser())) {
+                    if (account.getEmail().equalsIgnoreCase(existingUser.getEmail())) {
+                        errors.rejectValue("email", "authenticationui.account.error.emailAlreadyInUse");
                     }
                 }
             }
@@ -114,45 +111,28 @@ public class MyAccountPageController {
 
         if (!errors.hasErrors()) {
             try {
+                checkPermissionAndAddToModel(account.getUser(), model);
+
                 userService.saveUser(account.getUser());
                 Context.refreshAuthenticatedUser();
                 if (account.getDefaultLocale() != null) {
                     Context.setLocale(account.getDefaultLocale());
                 }
 
-                String msg = messageSourceService.getMessage("authenticationui.account.saved");
-                request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE, msg);
-                request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");
-                return "redirect:/authenticationui/account/myAccount.page";
+                setSuccessMessage(request, "authenticationui.account.saved");
+                return "redirect:authenticationui/account/account.page?userId=" + account.getUser().getId();
             }
             catch (Exception e) {
                 log.warn("Some error occurred while saving account details:", e);
-                String msg = messageSourceService.getMessage("authenticationui.account.error.save.fail", new Object[]{e.getMessage()}, Context.getLocale());
-                request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, msg);
+                sendErrorMessage("authenticationui.account.error.save.fail", e, request);
             }
         }
         else {
-            List<ObjectError> allErrors = errors.getAllErrors();
-            String message = "";
-            for (ObjectError error : allErrors) {
-                Object[] arguments = error.getArguments();
-                if (error.getCode() != null) {
-                    String errorMessage = messageSource.getMessage(error.getCode(), arguments, Context.getLocale());
-                    if (arguments != null) {
-                        for (int i = 0; i < arguments.length; i++) {
-                            String argument = (String) arguments[i];
-                            errorMessage = errorMessage.replaceAll("\\{" + i + "}", argument);
-                        }
-                    }
-                    message = message.concat(errorMessage.concat("<br>"));
-                }
-            }
-            request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, message);
+            sendErrorMessage(errors, request);
         }
 
         // reload page on error
-        get(model, account, true, locationService, administrationService);
-        return "account/myAccount";
+        return get(model, account, true, locationService, administrationService);
     }
 
     public static class Account {
