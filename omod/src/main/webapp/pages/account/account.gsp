@@ -157,6 +157,9 @@
                 padding: 10px;
                 border: none;
             }
+            .info-header {
+                padding-top: 10px;
+            }
         </style>
 
         <div id="locked-warning" class="note warning" ${!account.locked ? "style=\"display:none\"" : ""}>
