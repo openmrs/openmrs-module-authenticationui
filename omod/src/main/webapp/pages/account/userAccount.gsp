@@ -134,7 +134,7 @@
             <% } %>
 
             <div>
-                <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/account.page?userId=${account.user.id}'" />
+                <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${account.user.id}'" />
                 <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
             </div>
         </form>
@@ -255,7 +255,7 @@
                             <ul class="float-left">
                                 <h3 >${ ui.message("authenticationui.actions") }</h3>
                                 <li class="float-left">
-                                    <a class="float-left" href="${ui.pageLink("authenticationui", "account/account", [ edit: true, userId: user.id ])}">
+                                    <a class="float-left" href="${ui.pageLink("authenticationui", "account/userAccount", [ edit: true, userId: user.id ])}">
                                         <div class="row">
                                             <div class="col-1 col-lg-2">
                                                 <i class="fas fa-fw fa-user"></i>

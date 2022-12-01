@@ -25,7 +25,7 @@
 <script type="text/javascript">
     var breadcrumbs = [];
     breadcrumbs.push({ icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' });
-    breadcrumbs.push({ label: "${ accountTitle }", link: '${ui.pageLink("authenticationui", "account/account", [userId: user.id])}' });
+    breadcrumbs.push({ label: "${ accountTitle }", link: '${ui.pageLink("authenticationui", "account/userAccount", [userId: user.id])}' });
     breadcrumbs.push({ label: "${ ui.message("authenticationui.configure2fa.title")}" });
 
     jQuery(function() {
@@ -88,7 +88,7 @@
                     <% } %>
                 </div>
                 <div>
-                    <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/account.page?userId=${user.id}'" />
+                    <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
                     <input type="submit" class="confirm" id="next-button" value="${ ui.message("emr.next") }"  />
                 </div>
             </form>

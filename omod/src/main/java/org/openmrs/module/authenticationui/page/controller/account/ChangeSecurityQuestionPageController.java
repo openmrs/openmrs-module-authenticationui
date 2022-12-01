@@ -79,7 +79,7 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
                     userService.saveUser(securityQuestion.getUser());
                 }
                 setSuccessMessage(request, "authenticationui.changeSecretQuestion.success");
-                return "redirect:authenticationui/account/account.page?userId=" + securityQuestion.getUser().getId();
+                return "redirect:authenticationui/account/userAccount.page?userId=" + securityQuestion.getUser().getId();
             }
             catch (Exception e) {
                 sendErrorMessage("authenticationui.changeSecretQuestion.fail", e, request);

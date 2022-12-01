@@ -66,7 +66,7 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
             user.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
             userService.saveUser(user);
             setSuccessMessage(request, "authenticationui.configureTotp.success");
-            return "redirect:authenticationui/account/account.page?userId=" + user.getId();
+            return "redirect:authenticationui/account/userAccount.page?userId=" + user.getId();
         }
         catch (Exception e) {
             sendErrorMessage("authenticationui.configureTotp.fail", e, request);

@@ -67,7 +67,7 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
                     userService.changePassword(changePassword.getUser(), changePassword.getNewPassword());
                 }
                 setSuccessMessage(request, "authenticationui.changePassword.success");
-                return "redirect:authenticationui/account/account.page?userId=" + changePassword.getUser().getId();
+                return "redirect:authenticationui/account/userAccount.page?userId=" + changePassword.getUser().getId();
             }
             catch (Exception e) {
                 sendErrorMessage("authenticationui.changePassword.fail", e, request);

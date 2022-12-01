@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
-public class AccountPageController extends AbstractAccountPageController {
+public class UserAccountPageController extends AbstractAccountPageController {
 
     protected final Log log = LogFactory.getLog(getClass());
 
@@ -78,7 +78,7 @@ public class AccountPageController extends AbstractAccountPageController {
         model.addAttribute("editMode", edit == Boolean.TRUE);
         model.addAttribute("twoFactorAvailable", twoFactorAvailable);
         model.addAttribute("locations", locationService.getAllLocations());
-        return "account/account";
+        return "account/userAccount";
     }
 
     public String post(@MethodParam("getAccount") @BindParams Account account, BindingResult errors,
@@ -120,7 +120,7 @@ public class AccountPageController extends AbstractAccountPageController {
                 }
 
                 setSuccessMessage(request, "authenticationui.account.saved");
-                return "redirect:authenticationui/account/account.page?userId=" + account.getUser().getId();
+                return "redirect:authenticationui/account/userAccount.page?userId=" + account.getUser().getId();
             }
             catch (Exception e) {
                 log.warn("Some error occurred while saving account details:", e);

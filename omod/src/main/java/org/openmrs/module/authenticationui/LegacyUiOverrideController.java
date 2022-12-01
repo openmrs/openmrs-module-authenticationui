@@ -29,12 +29,12 @@ public class LegacyUiOverrideController {
 
     @RequestMapping("options.form")
     public String optionsForm() {
-        return "redirect:/authenticationui/account/account.page";
+        return "redirect:/authenticationui/account/userAccount.page";
     }
 
     @RequestMapping("/module/legacyui/optionsForm")
     public String optionsFormLegacyUi() {
-        return "redirect:/authenticationui/account/account.page";
+        return "redirect:/authenticationui/account/userAccount.page";
     }
 
 }

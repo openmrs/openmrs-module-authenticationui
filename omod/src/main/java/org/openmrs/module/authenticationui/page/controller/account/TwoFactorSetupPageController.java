@@ -101,7 +101,7 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
             }
             userService.saveUser(user);
             setSuccessMessage(request, "authenticationui.configure2fa.success");
-            return "redirect:authenticationui/account/account.page?userId=" + user.getId();
+            return "redirect:authenticationui/account/userAccount.page?userId=" + user.getId();
         }
         catch (Exception e) {
             sendErrorMessage("authenticationui.configure2fa.fail", e, request);
