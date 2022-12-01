@@ -69,8 +69,6 @@
                 <input type="password" id="password" name="password" autocomplete="off"/>
                 ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "password" ])}
             </p>
-        <% } else { %>
-            <input type="hidden" name="userId" value="${userToSetup.userId}"/>
         <% } %>
     </fieldset>
 

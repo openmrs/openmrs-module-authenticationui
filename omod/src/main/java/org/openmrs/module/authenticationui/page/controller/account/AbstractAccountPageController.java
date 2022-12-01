@@ -7,6 +7,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.ui.framework.page.PageModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
@@ -15,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public abstract class AbstractAccountPageController {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     protected AuthenticationUiModuleConfig getConfig() {
         return AuthenticationUiModuleConfig.getInstance();
@@ -61,6 +65,7 @@ public abstract class AbstractAccountPageController {
     }
 
     protected void sendErrorMessage(String code, Exception e, HttpServletRequest request) {
+        log.error("An error occurred", e);
         request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, getMessage(code, e.getMessage()));
     }
 

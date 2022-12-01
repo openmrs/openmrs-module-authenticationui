@@ -273,6 +273,23 @@ public class AccountPageController extends AbstractAccountPageController {
             return AuthenticationUiModuleConfig.getInstance().getDefaultLocationUserProperty();
         }
 
+        public boolean isEnabled() {
+            return !user.isRetired();
+        }
+
+        public boolean isLocked() {
+            String lockoutTimeProperty = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+            if (lockoutTimeProperty != null) {
+                try {
+                    long lockedOutUntil = Long.parseLong(lockoutTimeProperty) + 300000;
+                    return System.currentTimeMillis() < lockedOutUntil;
+                } catch (NumberFormatException ex) {
+                    return false;
+                }
+            }
+            return false;
+        }
+
         public User getUser() {
             return user;
         }

@@ -62,7 +62,7 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
         requireField(errors, "answer", securityQuestion.getAnswer(), "authenticationui.changeSecretQuestion.secretAnswer");
         requireField(errors, "confirmAnswer", securityQuestion.getConfirmAnswer(), "authenticationui.changeSecretQuestion.secretAnswerConfirmation");
         if (!securityQuestion.getAnswer().equalsIgnoreCase(securityQuestion.getConfirmAnswer())) {
-            rejectValue(errors, "confirmAnswer", "authenticationui.secretAnswerConfirmation.noMatch");
+            rejectValue(errors, "confirmAnswer", "authenticationui.changeSecretQuestion.secretAnswerConfirmation.noMatch");
         }
 
         if (!errors.hasErrors()) {
