@@ -8,6 +8,7 @@ import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -60,6 +61,7 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
         if (!errors.hasErrors()) {
             try {
                 checkPermissionAndAddToModel(changePassword.getUser(), model);
+                OpenmrsUtil.validatePassword(changePassword.getUser().getUsername(), changePassword.getNewPassword(), changePassword.getUser().getSystemId());
                 if (ownAccount) {
                     userService.changePassword(changePassword.getOldPassword(), changePassword.getNewPassword());
                 }

@@ -29,6 +29,7 @@ public class AuthenticationUiModuleConfig {
 	private String headerLogoUrl = "uicommons:images/logo/openmrs-with-title-small.png";
 	private String homePageUrl = "";
 	private boolean showLoginLocations = true;
+	private boolean requireLoginLocation = true;
 	private String loginLocationTagName = "Login Location";
 	private String lastLocationCookieName = "emr.lastSessionLocation";
 	private String loginWelcomeMessage = "authenticationui.login.welcomeMessage";
@@ -58,6 +59,10 @@ public class AuthenticationUiModuleConfig {
 
 	public static void setShowLoginLocations(boolean showLoginLocations) {
 		instance.showLoginLocations = showLoginLocations;
+	}
+
+	public static void setRequireLoginLocation(boolean requireLoginLocation) {
+		instance.requireLoginLocation = requireLoginLocation;
 	}
 
 	public static void setLoginLocationTagName(String loginLocationTagName) {
@@ -111,6 +116,10 @@ public class AuthenticationUiModuleConfig {
 
 	public boolean isShowLoginLocations() {
 		return showLoginLocations;
+	}
+
+	public boolean isRequireLoginLocation() {
+		return requireLoginLocation;
 	}
 
 	public String getLoginLocationTagName() {

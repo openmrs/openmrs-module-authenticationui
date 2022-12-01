@@ -129,7 +129,7 @@
             jq('#sessionLocation li').removeClass('selected');
             var sessionLocationVal = jq('#sessionLocationInput').val();
 
-            if (jq('#sessionLocation li').size() === 0) {
+            if (jq('#sessionLocation li').size() === 0 || ${ !authenticationUiConfig.requireLoginLocation }) {
                 jq('#login-button').removeClass('disabled');
                 jq('#login-button').removeAttr('disabled');
             }

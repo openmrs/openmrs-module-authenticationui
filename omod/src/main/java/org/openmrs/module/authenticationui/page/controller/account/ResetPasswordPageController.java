@@ -12,6 +12,7 @@ import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +67,7 @@ public class ResetPasswordPageController extends AbstractAccountPageController {
             else if (!newPassword.equals(confirmPassword)) {
                 throw new ValidationException(ui.message("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch"));
             }
+            OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
             userService.changePasswordUsingActivationKey(activationKey, newPassword);
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE, ui.message("authenticationui.changePassword.success"));
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");

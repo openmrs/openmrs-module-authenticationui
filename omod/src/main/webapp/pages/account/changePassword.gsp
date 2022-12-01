@@ -12,8 +12,6 @@
 
     jq(function() {
 
-        const PASSWORD_LENGTH = 8;
-
         disableSubmitButton();
 
         var timer;
@@ -55,17 +53,17 @@
             var newPassword = jq("#newPassword").val();
             var confirmPassword = jq("#confirmPassword").val();
 
-            if (confirmPassword.length >= 1 && (newPassword != confirmPassword)) {
+            if (confirmPassword.length >= 1 && (newPassword !== confirmPassword)) {
                 jq("#confirmPasswordSection .field-error").text(errorMessageNewAndConfirmPassword);
                 jq("#confirmPasswordSection .field-error").show();
                 disableSubmitButton();
-            } else if (isPasswordValid(newPassword) && newPassword == confirmPassword) {
+            } else if (isPasswordValid(newPassword) && newPassword === confirmPassword) {
                 jq("#confirmPasswordSection .field-error").hide();
                 enableSubmitButton();
             }
         }
         function isPasswordValid(newPassword) {
-            return newPassword && newPassword.length >= PASSWORD_LENGTH;
+            return newPassword && newPassword.length >= 0;
         }
 
         function disableSubmitButton(){

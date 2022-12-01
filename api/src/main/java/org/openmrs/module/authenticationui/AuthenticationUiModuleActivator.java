@@ -39,6 +39,9 @@ public class AuthenticationUiModuleActivator extends BaseModuleActivator {
 			else if (key.equals(MODULE_PREFIX + "showLoginLocations")) {
 				AuthenticationUiModuleConfig.setShowLoginLocations(Boolean.parseBoolean(p.getProperty(key)));
 			}
+			else if (key.equals(MODULE_PREFIX + "requireLoginLocation")) {
+				AuthenticationUiModuleConfig.setRequireLoginLocation(Boolean.parseBoolean(p.getProperty(key)));
+			}
 			else if (key.equals(MODULE_PREFIX + "loginLocationTagName")) {
 				AuthenticationUiModuleConfig.setLoginLocationTagName(p.getProperty(key));
 			}
