@@ -13,18 +13,4 @@
 		<property name="moduleId" value="${project.parent.artifactId}"/>
 	</bean>
 
-	<!-- TODO: Remove this - here only for testing -->
-	<bean class="org.openmrs.ui.framework.page.GlobalResourceIncluder">
-		<property name="resources">
-			<list>
-				<bean class="org.openmrs.ui.framework.resource.Resource">
-					<property name="category" value="css"/>
-					<property name="providerName" value="uicommons"/>
-					<property name="resourcePath" value="styles/styleguide/styleGuide.css"/>
-					<property name="priority" value="-100"/>
-				</bean>
-			</list>
-		</property>
-	</bean>
-
 </beans>
