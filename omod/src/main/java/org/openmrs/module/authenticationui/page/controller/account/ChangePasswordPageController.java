@@ -55,7 +55,7 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
         requireField(errors, "confirmPassword", changePassword.getConfirmPassword(), "authenticationui.changePassword.confirmPassword");
 
         if (!changePassword.getNewPassword().equals(changePassword.getConfirmPassword())) {
-            rejectValue(errors, "confirmPassword", "authenticationui.changePassword.newAndConfirmPassword.doesNotMatch");
+            rejectValue(errors, "confirmPassword", "authenticationui.changePassword.confirmPassword.doesNotMatch");
         }
 
         if (!errors.hasErrors()) {

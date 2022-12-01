@@ -61,11 +61,14 @@ public class ResetPasswordPageController extends AbstractAccountPageController {
                 throw new InvalidActivationKeyException("activation.key.not.correct");
             }
             Context.setLocale(userService.getDefaultLocaleForUser(user));
-            if (StringUtils.isBlank(newPassword) || StringUtils.isBlank(confirmPassword)) {
-                throw new ValidationException(ui.message("authenticationui.changePassword.newAndConfirmPassword.required"));
+            if (StringUtils.isBlank(newPassword)) {
+                throw new ValidationException(ui.message("authenticationui.changePassword.newPassword.required"));
+            }
+            else if (StringUtils.isBlank(confirmPassword)) {
+                throw new ValidationException(ui.message("authenticationui.changePassword.confirmPassword.required"));
             }
             else if (!newPassword.equals(confirmPassword)) {
-                throw new ValidationException(ui.message("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch"));
+                throw new ValidationException(ui.message("authenticationui.changePassword.confirmPassword.doesNotMatch"));
             }
             OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
             userService.changePasswordUsingActivationKey(activationKey, newPassword);

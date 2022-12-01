@@ -16,7 +16,7 @@
             var answer = jQuery("#answer").val();
             var confirmAnswer = jQuery("#confirmAnswer").val();
             if (confirmAnswer.length >= 1 && (answer !== confirmAnswer)) {
-                jQuery("#confirmAnswerSection .field-error").text("${ui.message("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch")}").show();
+                jQuery("#confirmAnswerSection .field-error").text("${ui.message("authenticationui.changePassword.confirmPassword.doesNotMatch")}").show();
             }
             else {
                 jQuery("#confirmAnswerSection .field-error").text("").hide();
