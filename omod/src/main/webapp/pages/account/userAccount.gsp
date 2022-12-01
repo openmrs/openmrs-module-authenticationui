@@ -288,18 +288,20 @@
                                         </div>
                                     </a>
                                 </li>
-                                <li class="float-left">
-                                    <a class="float-left" href="${ ui.pageLink("authenticationui", "account/twoFactorSetup", [userId: user.id]) }">
-                                        <div class="row">
-                                            <div class="col-1 col-lg-2">
-                                                <i class="fas fa-fw fa-user-lock"></i>
+                                <% if (twoFactorAvailable) { %>
+                                    <li class="float-left">
+                                        <a class="float-left" href="${ ui.pageLink("authenticationui", "account/twoFactorSetup", [userId: user.id]) }">
+                                            <div class="row">
+                                                <div class="col-1 col-lg-2">
+                                                    <i class="fas fa-fw fa-user-lock"></i>
+                                                </div>
+                                                <div class="col-11 col-lg-10">
+                                                    ${ ui.message("authenticationui.action.change2fa") }
+                                                </div>
                                             </div>
-                                            <div class="col-11 col-lg-10">
-                                                ${ ui.message("authenticationui.action.change2fa") }
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
+                                        </a>
+                                    </li>
+                                <% } %>
                                 <% if (sysAdmin) { %>
                                     <%  if (account.locked) { %>
                                         <li class="float-left">

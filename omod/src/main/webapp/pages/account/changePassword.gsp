@@ -8,7 +8,8 @@
 <script type="text/javascript">
     var errorMessageOldPassword = "${ui.message("authenticationui.changePassword.oldPassword.required")}";
     var errorMessageNewPassword = "${ui.message("authenticationui.changePassword.newPassword.required")}";
-    var errorMessageNewAndConfirmPassword = "${ui.message("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch")}";
+    var errorMessageConfirmPassword = "${ui.message("authenticationui.changePassword.confirmPassword.required")}";
+    var errorMessageNewAndConfirmPassword = "${ui.message("authenticationui.changePassword.confirmPassword.doesNotMatch")}";
 
     jq(function() {
 
@@ -53,7 +54,12 @@
             var newPassword = jq("#newPassword").val();
             var confirmPassword = jq("#confirmPassword").val();
 
-            if (confirmPassword.length >= 1 && (newPassword !== confirmPassword)) {
+            if (confirmPassword.length === 0) {
+                jq("#confirmPasswordSection .field-error").text(errorMessageConfirmPassword);
+                jq("#confirmPasswordSection .field-error").show();
+                disableSubmitButton();
+            }
+            else if (confirmPassword.length >= 1 && (newPassword !== confirmPassword)) {
                 jq("#confirmPasswordSection .field-error").text(errorMessageNewAndConfirmPassword);
                 jq("#confirmPasswordSection .field-error").show();
                 disableSubmitButton();
@@ -94,7 +100,6 @@
         <p id="newPasswordSection" class="emr_passwordDetails">
             <label class="form-header" for="newPassword">${ ui.message("authenticationui.changePassword.newPassword") }</label>
             <input type="password" id="newPassword" name="newPassword"  autocomplete="off"/>
-            <label id="format-password">${ ui.message("authenticationui.changePassword.passwordFormat") }</label>
             ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "newPassword" ])}
         </p>
         <p id="confirmPasswordSection" class="emr_passwordDetails">
