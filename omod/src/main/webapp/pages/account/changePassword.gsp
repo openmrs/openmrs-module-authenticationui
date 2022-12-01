@@ -1,15 +1,11 @@
 <%
-    def accountTitle = ownAccount ? ui.message("authenticationui.myAccount.title") : ui.format(user.person)
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.changePassword.title") ])
     ui.includeCss("authenticationui", "account.css", -60)
 %>
 
+<%= ui.includeFragment("authenticationui", "accountBreadcrumbs", [ userId: user.id, label: "authenticationui.changePassword.title" ]) %>
+
 <script type="text/javascript">
-    var breadcrumbs = [
-        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ accountTitle }", link: '${ui.pageLink("authenticationui", "account/userAccount", [userId: user.id])}' },
-        { label: "${ ui.message("authenticationui.changePassword.title")}" }
-    ];
     var errorMessageOldPassword = "${ui.message("authenticationui.changePassword.oldPassword.required")}";
     var errorMessageNewPassword = "${ui.message("authenticationui.changePassword.newPassword.required")}";
     var errorMessageNewAndConfirmPassword = "${ui.message("authenticationui.changePassword.newAndConfirmPassword.doesNotMatch")}";

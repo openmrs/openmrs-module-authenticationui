@@ -10,22 +10,24 @@
 package org.openmrs.module.authenticationui;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.module.ModuleFactory;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class provides a means to configure the behavior and overwrite defaults in this module with custom values
  */
 public class AuthenticationUiModuleConfig {
 	
-	private static AuthenticationUiModuleConfig instance = new AuthenticationUiModuleConfig();
+	private static final AuthenticationUiModuleConfig instance = new AuthenticationUiModuleConfig();
 
-	private String headerLogoUrlProvider = "uicommons";
-	private String headerLogoUrlResource = "images/logo/openmrs-with-title-small.png";
-	private String homePageProvider = "";
-	private String homePageResource = "";
+	private String headerLogoUrl = "uicommons:images/logo/openmrs-with-title-small.png";
+	private String homePageUrl = "";
 	private boolean showLoginLocations = true;
 	private String loginLocationTagName = "Login Location";
 	private String lastLocationCookieName = "emr.lastSessionLocation";
@@ -35,6 +37,7 @@ public class AuthenticationUiModuleConfig {
 	private String accountAdminPrivilege = PrivilegeConstants.EDIT_USERS;
 	private String phoneNumberPersonAttributeType = null;
 	private String defaultLocationUserProperty = OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION;
+	private List<Map<String, String>> accountBreadcrumbs = new ArrayList<>();
 
 	private AuthenticationUiModuleConfig() {
 	}
@@ -45,20 +48,12 @@ public class AuthenticationUiModuleConfig {
 
 	// ***** static setters
 
-	public static void setHeaderLogoUrlProvider(String headerLogoUrlProvider) {
-		instance.headerLogoUrlProvider = headerLogoUrlProvider;
+	public static void setHeaderLogoUrl(String headerLogoUrl) {
+		instance.headerLogoUrl = headerLogoUrl;
 	}
 
-	public static void setHeaderLogoUrlResource(String headerLogoUrlResource) {
-		instance.headerLogoUrlResource = headerLogoUrlResource;
-	}
-
-	public static void setHomePageProvider(String homePageProvider) {
-		instance.homePageProvider = homePageProvider;
-	}
-
-	public static void setHomePageResource(String homePageResource) {
-		instance.homePageResource = homePageResource;
+	public static void setHomePageUrl(String homePageUrl) {
+		instance.homePageUrl = homePageUrl;
 	}
 
 	public static void setShowLoginLocations(boolean showLoginLocations) {
@@ -97,14 +92,21 @@ public class AuthenticationUiModuleConfig {
 		instance.defaultLocationUserProperty = defaultLocationUserProperty;
 	}
 
+	public static void addAccountBreadcrumb(String labelCode, String link) {
+		Map<String, String> breadcrumb = new HashMap<>();
+		breadcrumb.put("label", labelCode);
+		breadcrumb.put("link", link);
+		instance.accountBreadcrumbs.add(breadcrumb);
+	}
+
 	// ***** instance getters
 
 	public String getHeaderLogoUrl(UiUtils ui) {
-		return getResourceUrl(ui, headerLogoUrlProvider, headerLogoUrlResource);
+		return getResourceUrl(ui, headerLogoUrl);
 	}
 
 	public String getHomePageUrl(UiUtils ui) {
-		return getPageUrl(ui, homePageProvider, homePageResource);
+		return getPageUrl(ui, homePageUrl);
 	}
 
 	public boolean isShowLoginLocations() {
@@ -143,25 +145,34 @@ public class AuthenticationUiModuleConfig {
 		return defaultLocationUserProperty;
 	}
 
-	public String getPageDecoratorProvider() {
-		return ModuleFactory.isModuleStarted("appui") ? "appui" : "authenticationui";
-	}
-
-	public String getPageDecoratorResource() {
-		return ModuleFactory.isModuleStarted("appui") ? "standardEmrPage" : "legacyUi";
-	}
-
-	public String getPageUrl(UiUtils ui, String provider, String resource) {
-		if (StringUtils.isBlank(provider)) {
-			return "/" + ui.contextPath() + "/" + resource;
+	public List<Map<String, String>> getAccountBreadcrumbs(UiUtils ui) {
+		List<Map<String, String>> ret = new ArrayList<>();
+		for (Map<String, String> m : accountBreadcrumbs) {
+			Map<String, String> breadcrumb = new HashMap<>();
+			String label = m.get("label");
+			String icon = m.get("icon");
+			String link = m.get("link");
+			breadcrumb.put("label", StringUtils.isBlank(label) ? "" : ui.message(label));
+			breadcrumb.put("icon", icon == null ? "" : icon);
+			breadcrumb.put("link", StringUtils.isBlank(link) ? "" : getPageUrl(ui, link));
+			ret.add(breadcrumb);
 		}
-		return ui.pageLink(provider, resource);
+		return ret;
 	}
 
-	public String getResourceUrl(UiUtils ui, String provider, String resource) {
-		if (StringUtils.isBlank(provider)) {
-			return ui.resourceLink(resource);
+	public String getPageUrl(UiUtils ui, String url) {
+		String[] providerAndResource = url.split(":");
+		if (providerAndResource.length == 1) {
+			return "/" + ui.contextPath() + "/" + url;
 		}
-		return ui.resourceLink(provider, resource);
+		return ui.pageLink(providerAndResource[0], providerAndResource[1]);
+	}
+
+	public String getResourceUrl(UiUtils ui, String url) {
+		String[] providerAndResource = url.split(":");
+		if (providerAndResource.length == 1) {
+			return ui.resourceLink(url);
+		}
+		return ui.resourceLink(providerAndResource[0], providerAndResource[1]);
 	}
 }

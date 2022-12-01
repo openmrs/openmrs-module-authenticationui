@@ -33,11 +33,9 @@
     }
 </style>
 
+<%= ui.includeFragment("authenticationui", "accountBreadcrumbs", [ userId: user.id ]) %>
+
 <script type="text/javascript">
-    var breadcrumbs = [
-        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ accountTitle }" }
-    ];
 
     function unlockAccount() {
         jq.post(emr.fragmentActionLink("authenticationui", "accountAction", "unlock", { userId: ${user.id} }), function (data) {

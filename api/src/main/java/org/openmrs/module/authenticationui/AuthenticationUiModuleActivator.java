@@ -30,17 +30,11 @@ public class AuthenticationUiModuleActivator extends BaseModuleActivator {
 		log.info("Authentication UI Module Started");
 		Properties p = Context.getRuntimeProperties();
 		for (String key : p.stringPropertyNames()) {
-			if (key.equals(MODULE_PREFIX + "headerLogoUrlProvider")) {
-				AuthenticationUiModuleConfig.setHeaderLogoUrlProvider(p.getProperty(key));
+			if (key.equals(MODULE_PREFIX + "headerLogoUrl")) {
+				AuthenticationUiModuleConfig.setHeaderLogoUrl(p.getProperty(key));
 			}
-			else if (key.equals(MODULE_PREFIX + "headerLogoUrlResource")) {
-				AuthenticationUiModuleConfig.setHeaderLogoUrlResource(p.getProperty(key));
-			}
-			else if (key.equals(MODULE_PREFIX + "homePageProvider")) {
-				AuthenticationUiModuleConfig.setHomePageProvider(p.getProperty(key));
-			}
-			else if (key.equals(MODULE_PREFIX + "homePageResource")) {
-				AuthenticationUiModuleConfig.setHomePageResource(p.getProperty(key));
+			else if (key.equals(MODULE_PREFIX + "homePageUrl")) {
+				AuthenticationUiModuleConfig.setHomePageUrl(p.getProperty(key));
 			}
 			else if (key.equals(MODULE_PREFIX + "showLoginLocations")) {
 				AuthenticationUiModuleConfig.setShowLoginLocations(Boolean.parseBoolean(p.getProperty(key)));

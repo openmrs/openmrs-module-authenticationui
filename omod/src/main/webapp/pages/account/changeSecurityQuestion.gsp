@@ -1,14 +1,11 @@
 <%
-    def accountTitle = ownAccount ? ui.message("authenticationui.myAccount.title") : ui.format(user.person)
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("authenticationui.changeSecretQuestion.title") ])
     ui.includeCss("authenticationui", "account.css", -60)
 %>
 
+<%= ui.includeFragment("authenticationui", "accountBreadcrumbs", [ userId: user.id, label: "authenticationui.changeSecretQuestion.title" ]) %>
+
 <script type="text/javascript">
-    var breadcrumbs = [];
-    breadcrumbs.push({ icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' });
-    breadcrumbs.push({ label: "${ accountTitle }", link: '${ui.pageLink("authenticationui", "account/userAccount", [userId: user.id])}' });
-    breadcrumbs.push({ label: "${ ui.message("authenticationui.changeSecretQuestion.title")}" });
 
     jQuery(function() {
         let saveButton = jQuery("#save-button");
