@@ -45,10 +45,12 @@ public class AccountBreadcrumbsFragmentController {
 
         List<Map<String, String>> breadcrumbs = new ArrayList<>();
 
-        addBreadcrumb(breadcrumbs, "icon-home", "", AuthenticationUiModuleConfig.getInstance().getHomePageUrl(ui));
+        AuthenticationUiModuleConfig authConfig = AuthenticationUiModuleConfig.getInstance();
 
+        addBreadcrumb(breadcrumbs, "icon-home", "", authConfig.getHomePageUrl(ui));
         if (!ownAccount) {
-            breadcrumbs.addAll(AuthenticationUiModuleConfig.getInstance().getAccountBreadcrumbs(ui));
+            addBreadcrumb(breadcrumbs, "", ui.message("authenticationui.systemAdministration.title"), authConfig.getAdminPageUrl(ui));
+            addBreadcrumb(breadcrumbs, "", ui.message("authenticationui.manageAccounts.title"), authConfig.getManageUsersUrl(ui));
         }
 
         if (userId != null) {

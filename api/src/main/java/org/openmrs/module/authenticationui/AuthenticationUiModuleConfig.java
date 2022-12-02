@@ -9,15 +9,9 @@
  */
 package org.openmrs.module.authenticationui;
 
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class provides a means to configure the behavior and overwrite defaults in this module with custom values
@@ -28,6 +22,8 @@ public class AuthenticationUiModuleConfig {
 
 	private String headerLogoUrl = "uicommons:images/logo/openmrs-with-title-small.png";
 	private String homePageUrl = "";
+	private String adminPageUrl = "/admin/index.htm";
+	private String manageUsersUrl = "/admin/users/users.list";
 	private boolean showLoginLocations = true;
 	private boolean requireLoginLocation = true;
 	private String loginLocationTagName = "Login Location";
@@ -38,7 +34,6 @@ public class AuthenticationUiModuleConfig {
 	private String accountAdminPrivilege = PrivilegeConstants.EDIT_USERS;
 	private String phoneNumberPersonAttributeType = null;
 	private String defaultLocationUserProperty = OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION;
-	private List<Map<String, String>> accountBreadcrumbs = new ArrayList<>();
 
 	private AuthenticationUiModuleConfig() {
 	}
@@ -55,6 +50,14 @@ public class AuthenticationUiModuleConfig {
 
 	public static void setHomePageUrl(String homePageUrl) {
 		instance.homePageUrl = homePageUrl;
+	}
+
+	public static void setAdminPageUrl(String adminPageUrl) {
+		instance.adminPageUrl = adminPageUrl;
+	}
+
+	public static void setManageUsersUrl(String manageUsersUrl) {
+		instance.manageUsersUrl = manageUsersUrl;
 	}
 
 	public static void setShowLoginLocations(boolean showLoginLocations) {
@@ -97,13 +100,6 @@ public class AuthenticationUiModuleConfig {
 		instance.defaultLocationUserProperty = defaultLocationUserProperty;
 	}
 
-	public static void addAccountBreadcrumb(String labelCode, String link) {
-		Map<String, String> breadcrumb = new HashMap<>();
-		breadcrumb.put("label", labelCode);
-		breadcrumb.put("link", link);
-		instance.accountBreadcrumbs.add(breadcrumb);
-	}
-
 	// ***** instance getters
 
 	public String getHeaderLogoUrl(UiUtils ui) {
@@ -112,6 +108,14 @@ public class AuthenticationUiModuleConfig {
 
 	public String getHomePageUrl(UiUtils ui) {
 		return getPageUrl(ui, homePageUrl);
+	}
+
+	public String getAdminPageUrl(UiUtils ui) {
+		return getPageUrl(ui, adminPageUrl);
+	}
+
+	public String getManageUsersUrl(UiUtils ui) {
+		return getPageUrl(ui, manageUsersUrl);
 	}
 
 	public boolean isShowLoginLocations() {
@@ -152,21 +156,6 @@ public class AuthenticationUiModuleConfig {
 
 	public String getDefaultLocationUserProperty() {
 		return defaultLocationUserProperty;
-	}
-
-	public List<Map<String, String>> getAccountBreadcrumbs(UiUtils ui) {
-		List<Map<String, String>> ret = new ArrayList<>();
-		for (Map<String, String> m : accountBreadcrumbs) {
-			Map<String, String> breadcrumb = new HashMap<>();
-			String label = m.get("label");
-			String icon = m.get("icon");
-			String link = m.get("link");
-			breadcrumb.put("label", StringUtils.isBlank(label) ? "" : ui.message(label));
-			breadcrumb.put("icon", icon == null ? "" : icon);
-			breadcrumb.put("link", StringUtils.isBlank(link) ? "" : getPageUrl(ui, link));
-			ret.add(breadcrumb);
-		}
-		return ret;
 	}
 
 	public String getPageUrl(UiUtils ui, String url) {

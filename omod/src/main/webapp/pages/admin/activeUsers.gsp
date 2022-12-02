@@ -5,7 +5,7 @@
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/${ui.contextPath()}/index.htm' },
-        { label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${ui.pageLink("coreapps", "systemadministration/systemAdministration")}' },
+        { label: "${ ui.message("authenticationui.systemAdministration.title")}", link: '${authenticationUiConfig.getAdminPageUrl(ui)}' },
         { label: "${ ui.message("authenticationui.activeUsers.title")}" }
     ];
 </script>

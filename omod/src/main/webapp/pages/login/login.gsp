@@ -135,11 +135,6 @@
             jq('#sessionLocation li').removeClass('selected');
             var sessionLocationVal = jq('#sessionLocationInput').val();
 
-            if (${ !authenticationUiConfig.requireLoginLocation }) {
-                jq('#login-button').removeClass('disabled');
-                jq('#login-button').removeAttr('disabled');
-            }
-
             if (jq('#sessionLocation li').size() === 0) {
                 jq('#login-button').removeClass('disabled');
                 jq('#login-button').removeAttr('disabled');
@@ -148,7 +143,12 @@
                 jq('#sessionLocation li[value|=' + sessionLocationVal + ']').addClass('selected');
                 jq('#login-button').removeClass('disabled');
                 jq('#login-button').removeAttr('disabled');
-            } else {
+            }
+            else if (${ !authenticationUiConfig.requireLoginLocation }) {
+                jq('#login-button').removeClass('disabled');
+                jq('#login-button').removeAttr('disabled');
+            }
+            else {
                 jq('#login-button').addClass('disabled');
                 jq('#login-button').attr('disabled','disabled');
             }
