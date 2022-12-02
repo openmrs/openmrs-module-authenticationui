@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
@@ -35,6 +35,7 @@ public class AccountBreadcrumbsFragmentController {
     protected final Log log = LogFactory.getLog(getClass());
 
     public void controller(@SpringBean("userService") UserService userService,
+                           @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                            FragmentConfiguration config, FragmentModel model, UiUtils ui) {
 
         Integer userId = (Integer) config.getAttribute("userId");
@@ -45,12 +46,10 @@ public class AccountBreadcrumbsFragmentController {
 
         List<Map<String, String>> breadcrumbs = new ArrayList<>();
 
-        AuthenticationUiModuleConfig authConfig = AuthenticationUiModuleConfig.getInstance();
-
-        addBreadcrumb(breadcrumbs, "icon-home", "", authConfig.getHomePageUrl(ui));
+        addBreadcrumb(breadcrumbs, "icon-home", "", authenticationUiConfig.getHomePageUrl(ui));
         if (!ownAccount) {
-            addBreadcrumb(breadcrumbs, "", ui.message("authenticationui.systemAdministration.title"), authConfig.getAdminPageUrl(ui));
-            addBreadcrumb(breadcrumbs, "", ui.message("authenticationui.manageAccounts.title"), authConfig.getManageUsersUrl(ui));
+            addBreadcrumb(breadcrumbs, "", ui.message("authenticationui.systemAdministration.title"), authenticationUiConfig.getAdminPageUrl(ui));
+            addBreadcrumb(breadcrumbs, "", ui.message("authenticationui.manageAccounts.title"), authenticationUiConfig.getManageUsersUrl(ui));
         }
 
         if (userId != null) {

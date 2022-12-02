@@ -4,6 +4,7 @@ package org.openmrs.module.authenticationui.page.controller.account;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -28,10 +29,11 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
     }
 
     public String get(@MethodParam("getChangePassword") @BindParams ChangePassword changePassword,
+                      @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                       PageModel model) {
 
         try {
-            checkPermissionAndAddToModel(changePassword.getUser(), model);
+            checkPermissionAndAddToModel(authenticationUiConfig, changePassword.getUser(), model);
         }
         catch (Exception e) {
             return "redirect:/index.htm";
@@ -43,6 +45,7 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
     public String post(@MethodParam("getChangePassword") @BindParams ChangePassword changePassword,
                        BindingResult errors,
                        @SpringBean("userService") UserService userService,
+                       @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
                        PageModel model) {
 
@@ -60,7 +63,7 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
 
         if (!errors.hasErrors()) {
             try {
-                checkPermissionAndAddToModel(changePassword.getUser(), model);
+                checkPermissionAndAddToModel(authenticationUiConfig, changePassword.getUser(), model);
                 OpenmrsUtil.validatePassword(changePassword.getUser().getUsername(), changePassword.getNewPassword(), changePassword.getUser().getSystemId());
                 if (ownAccount) {
                     userService.changePassword(changePassword.getOldPassword(), changePassword.getNewPassword());
@@ -80,7 +83,7 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
             sendErrorMessage(errors, request);
         }
 
-        return get(changePassword, model);
+        return get(changePassword, authenticationUiConfig, model);
     }
 
     private static class ChangePassword {

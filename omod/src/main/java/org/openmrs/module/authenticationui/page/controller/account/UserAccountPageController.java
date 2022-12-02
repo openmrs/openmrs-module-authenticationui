@@ -27,17 +27,15 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -51,21 +49,23 @@ public class UserAccountPageController extends AbstractAccountPageController {
     public Account getAccount(@RequestParam(value = "userId", required = false) Integer userId,
                               @SpringBean("userService") UserService userService,
                               @SpringBean("personService") PersonService personService,
-                              @SpringBean("locationService") LocationService locationService) {
+                              @SpringBean("locationService") LocationService locationService,
+                              @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
 
         userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
         User user = userService.getUser(userId);
-        return new Account(user, personService, locationService);
+        return new Account(user, personService, locationService, authenticationUiConfig);
     }
 
     public String get(PageModel model,
-                    @MethodParam("getAccount") @BindParams Account account,
-                    @RequestParam(value = "edit", required = false) Boolean edit,
-                    @SpringBean("locationService") LocationService locationService,
-                    @SpringBean("adminService") AdministrationService administrationService) {
+                      @MethodParam("getAccount") @BindParams Account account,
+                      @RequestParam(value = "edit", required = false) Boolean edit,
+                      @SpringBean("locationService") LocationService locationService,
+                      @SpringBean("adminService") AdministrationService administrationService,
+                      @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
 
         try {
-            checkPermissionAndAddToModel(account.getUser(), model);
+            checkPermissionAndAddToModel(authenticationUiConfig, account.getUser(), model);
         }
         catch (Exception e) {
             return "redirect:/index.htm";
@@ -82,12 +82,10 @@ public class UserAccountPageController extends AbstractAccountPageController {
     }
 
     public String post(@MethodParam("getAccount") @BindParams Account account, BindingResult errors,
-                       @SpringBean("messageSource") MessageSource messageSource,
-                       @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @SpringBean("locationService") LocationService locationService,
                        @SpringBean("adminService") AdministrationService administrationService,
                        @SpringBean("userService") UserService userService,
-                       @SpringBean("personService") PersonService personService,
+                       @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        PageModel model,
                        HttpServletRequest request) {
 
@@ -111,7 +109,7 @@ public class UserAccountPageController extends AbstractAccountPageController {
 
         if (!errors.hasErrors()) {
             try {
-                checkPermissionAndAddToModel(account.getUser(), model);
+                checkPermissionAndAddToModel(authenticationUiConfig, account.getUser(), model);
 
                 userService.saveUser(account.getUser());
                 Context.refreshAuthenticatedUser();
@@ -132,19 +130,21 @@ public class UserAccountPageController extends AbstractAccountPageController {
         }
 
         // reload page on error
-        return get(model, account, true, locationService, administrationService);
+        return get(model, account, true, locationService, administrationService, authenticationUiConfig);
     }
 
-    public static class Account {
+    public class Account {
 
         private final User user;
         private final PersonService personService;
         private final LocationService locationService;
+        private final AuthenticationUiConfig authenticationUiConfig;
 
-        public Account(User user, PersonService personService, LocationService locationService) {
+        public Account(User user, PersonService personService, LocationService locationService, AuthenticationUiConfig authenticationUiConfig) {
             this.user = user;
             this.personService = personService;
             this.locationService = locationService;
+            this.authenticationUiConfig = authenticationUiConfig;
         }
 
         public String getGivenName() {
@@ -259,7 +259,7 @@ public class UserAccountPageController extends AbstractAccountPageController {
 
         public PersonAttributeType getPhoneNumberAttributeType() {
             PersonAttributeType phoneNumberAttributeType = null;
-            String attType = AuthenticationUiModuleConfig.getInstance().getPhoneNumberPersonAttributeType();
+            String attType = authenticationUiConfig.getPhoneNumberPersonAttributeType();
             if (StringUtils.isNotBlank(attType)) {
                 phoneNumberAttributeType = personService.getPersonAttributeTypeByUuid(attType);
                 if (phoneNumberAttributeType == null) {
@@ -270,7 +270,7 @@ public class UserAccountPageController extends AbstractAccountPageController {
         }
 
         public String getDefaultLocationUserProperty() {
-            return AuthenticationUiModuleConfig.getInstance().getDefaultLocationUserProperty();
+            return authenticationUiConfig.getDefaultLocationUserProperty();
         }
 
         public boolean isEnabled() {

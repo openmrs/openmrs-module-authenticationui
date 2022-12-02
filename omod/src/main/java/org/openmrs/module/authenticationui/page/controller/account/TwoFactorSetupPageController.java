@@ -9,6 +9,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authentication.web.WebAuthenticationScheme;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,12 +22,13 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
 
     public String get(PageModel model,
                       @RequestParam(value = "userId", required = false) Integer userId,
-                      @SpringBean("userService") UserService userService) {
+                      @SpringBean("userService") UserService userService,
+                      @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
 
         userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
         User user = userService.getUser(userId);
         try {
-            checkPermissionAndAddToModel(user, model);
+            checkPermissionAndAddToModel(authenticationUiConfig, user, model);
         }
         catch (Exception e) {
             return "redirect:/index.htm";
@@ -61,6 +63,7 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
     public String post(@RequestParam(value = "userId", required = false) Integer userId,
                        @RequestParam(value = "schemeId", required = false) String schemeId,
                        @SpringBean("userService") UserService userService,
+                       @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
                        PageModel model) {
 
@@ -69,7 +72,7 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
         boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
 
         try {
-            checkPermissionAndAddToModel(user, model);
+            checkPermissionAndAddToModel(authenticationUiConfig, user, model);
 
             // If this scheme requires configuration, redirect to the configuration page
             if (StringUtils.isNotBlank(schemeId)) {
@@ -107,7 +110,7 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
             sendErrorMessage("authenticationui.configure2fa.fail", e, request);
         }
 
-        return get(model, userId, userService);
+        return get(model, userId, userService, authenticationUiConfig);
     }
 
     public static class SecondaryOption {

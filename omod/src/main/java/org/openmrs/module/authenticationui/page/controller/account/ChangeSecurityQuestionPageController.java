@@ -5,6 +5,7 @@ import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -32,10 +33,11 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
     public String get(PageModel model,
                       @MethodParam("getChangeSecurityQuestion") @BindParams ChangeSecurityQuestion securityQuestion,
                       @RequestParam(value = "schemeId", required = false) String schemeId,
-                      @SpringBean("userService") UserService userService) {
+                      @SpringBean("userService") UserService userService,
+                      @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
 
         try {
-            checkPermissionAndAddToModel(securityQuestion.getUser(), model);
+            checkPermissionAndAddToModel(authenticationUiConfig, securityQuestion.getUser(), model);
         }
         catch (Exception e) {
             return "redirect:/index.htm";
@@ -50,6 +52,7 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
                        BindingResult errors,
                        @RequestParam(value = "schemeId", required = false) String schemeId,
                        @SpringBean("userService") UserService userService,
+                       @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
                        PageModel model) {
 
@@ -67,7 +70,7 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
 
         if (!errors.hasErrors()) {
             try {
-                checkPermissionAndAddToModel(securityQuestion.getUser(), model);
+                checkPermissionAndAddToModel(authenticationUiConfig, securityQuestion.getUser(), model);
                 if (ownAccount) {
                     userService.changeQuestionAnswer(securityQuestion.getPassword(), securityQuestion.getQuestion(), securityQuestion.getAnswer());
                 }
@@ -89,7 +92,7 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
             sendErrorMessage(errors, request);
         }
 
-        return get(model, securityQuestion, schemeId, userService);
+        return get(model, securityQuestion, schemeId, userService, authenticationUiConfig);
     }
 
     private static class ChangeSecurityQuestion {

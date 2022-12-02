@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.ui.framework.page.PageModel;
 import org.slf4j.Logger;
@@ -20,13 +20,9 @@ public abstract class AbstractAccountPageController {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    protected AuthenticationUiModuleConfig getConfig() {
-        return AuthenticationUiModuleConfig.getInstance();
-    }
-
-    protected void checkPermissionAndAddToModel(User user, PageModel model) {
+    protected void checkPermissionAndAddToModel(AuthenticationUiConfig authenticationUiConfig, User user, PageModel model) {
         boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
-        boolean sysAdmin = Context.hasPrivilege(getConfig().getAccountAdminPrivilege());
+        boolean sysAdmin = Context.hasPrivilege(authenticationUiConfig.getAccountAdminPrivilege());
         if (!ownAccount && !sysAdmin) {
             throw new APIException("authenticationui.unauthorizedPageError");
         }

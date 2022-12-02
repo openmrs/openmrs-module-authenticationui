@@ -20,7 +20,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.UserLogin;
 import org.openmrs.module.authentication.web.AuthenticationSession;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
@@ -31,10 +31,9 @@ public class LoginSecretPageController {
 	public String get(
 			PageModel pageModel,
 			@SpringBean("userService") UserService userService,
+			@SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
 			UiUtils ui,
 			PageRequest request) {
-
-		AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
 
 		if (Context.isAuthenticated()) {
 			return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
@@ -66,7 +65,7 @@ public class LoginSecretPageController {
 		return null;
 	}
 
-	public String post(UiUtils ui) {
-		return "redirect:" + AuthenticationUiModuleConfig.getInstance().getHomePageUrl(ui);
+	public String post(UiUtils ui, @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
+		return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
 	}
 }

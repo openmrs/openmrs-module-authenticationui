@@ -7,6 +7,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.TotpAuthenticationScheme;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.Security;
@@ -19,12 +20,13 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
     public String get(PageModel model,
                       @RequestParam(value = "userId", required = false) Integer userId,
                       @RequestParam(value = "schemeId", required = false) String schemeId,
-                      @SpringBean("userService") UserService userService) {
+                      @SpringBean("userService") UserService userService,
+                      @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
 
         userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
         User user = userService.getUser(userId);
         try {
-            checkPermissionAndAddToModel(user, model);
+            checkPermissionAndAddToModel(authenticationUiConfig, user, model);
         }
         catch (Exception e) {
             return "redirect:/index.htm";
@@ -46,6 +48,7 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
                        @RequestParam(value = "secret") String secret,
                        @RequestParam(value = "code", required = false) String code,
                        @SpringBean("userService") UserService userService,
+                       @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
                        PageModel model) {
 
@@ -54,7 +57,7 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
 
         TotpAuthenticationScheme scheme = (TotpAuthenticationScheme) AuthenticationConfig.getAuthenticationScheme(schemeId);
         try {
-            checkPermissionAndAddToModel(user, model);
+            checkPermissionAndAddToModel(authenticationUiConfig, user, model);
             if (StringUtils.isBlank(code) || StringUtils.isBlank(secret)) {
                 throw new RuntimeException("authenticationui.configureTotp.code.required");
             }
@@ -72,6 +75,6 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
             sendErrorMessage("authenticationui.configureTotp.fail", e, request);
         }
 
-        return get(model, userId, schemeId, userService);
+        return get(model, userId, schemeId, userService, authenticationUiConfig);
     }
 }

@@ -2,19 +2,18 @@ package org.openmrs.module.authenticationui.page.controller.admin;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.UserLoginTracker;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
-
-import java.io.IOException;
 
 /**
  * Administrative page to view currently logged-in users
  */
 public class ActiveUsersPageController {
 
-    public String get(PageModel model, UiUtils ui) throws IOException {
-        AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
+    public String get(PageModel model, UiUtils ui,
+                      @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
         if (!Context.hasPrivilege(authenticationUiConfig.getAccountAdminPrivilege())) {
             return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
         }
