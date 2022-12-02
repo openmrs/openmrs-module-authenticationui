@@ -10,6 +10,12 @@
         border-bottom: 0 !important;
         vertical-align: top;
     }
+    #login-form ul.select {
+        width: 850px;
+    }
+    #login-form p input[type=text], #login-form p input[type=password] {
+        width: 405px;
+    }
 </style>
 
 

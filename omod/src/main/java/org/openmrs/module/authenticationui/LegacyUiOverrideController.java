@@ -15,6 +15,7 @@ package org.openmrs.module.authenticationui;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller that overrides pages from the legacyui module that the authenticationui module replaces
@@ -32,9 +33,8 @@ public class LegacyUiOverrideController {
         return "redirect:/authenticationui/account/userAccount.page";
     }
 
-    @RequestMapping("/module/legacyui/optionsForm")
-    public String optionsFormLegacyUi() {
-        return "redirect:/authenticationui/account/userAccount.page";
+    @RequestMapping("admin/users/user.htm")
+    public String usersForm(@RequestParam(value = "userId") Integer userId) {
+        return "redirect:/authenticationui/account/userAccount.page?userId=" + userId;
     }
-
 }
