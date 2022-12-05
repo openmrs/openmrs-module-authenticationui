@@ -31,6 +31,7 @@ public class AuthenticationUiConfig {
 	public static final String ADMIN_EXTENSION = "org.openmrs.module.authenticationui.admin.config";
 	public static final String ADMIN_PAGE_URL = "admin-page-url";
 	public static final String ADMIN_MANAGE_USERS_PAGE_URL = "manage-users-page-url";
+	public static final String ADMIN_EDIT_USER_PAGE_URL = "admin-edit-user-page-url";
 	public static final String ADMIN_REQUIRED_PRIVILEGE = "required-privilege";
 	public static final String ADMIN_PHONE_ATTRIBUTE_TYPE = "phone-number-person-attribute-type";
 	public static final String ADMIN_DEFAULT_LOCATION_USER_PROPERTY = "default-location-user-property";
@@ -95,6 +96,10 @@ public class AuthenticationUiConfig {
 		return getPageUrl(ui, getConfig(ADMIN_EXTENSION, ADMIN_MANAGE_USERS_PAGE_URL, "/admin/users/users.list"));
 	}
 
+	public String getAdminEditUserPageUrl(UiUtils ui, Integer userId) {
+		return getPageUrl(ui, getConfig(ADMIN_EXTENSION, ADMIN_EDIT_USER_PAGE_URL, "authenticationui:account/userAccount"), "userId", userId);
+	}
+
 	public String getAccountAdminPrivilege() {
 		return getConfig(ADMIN_EXTENSION, ADMIN_REQUIRED_PRIVILEGE, PrivilegeConstants.EDIT_USERS);
 	}
@@ -130,12 +135,21 @@ public class AuthenticationUiConfig {
 		return null;
 	}
 
-	protected String getPageUrl(UiUtils ui, String url) {
+	protected String getPageUrl(UiUtils ui, String url, Object... params) {
+		String pageUrl = "";
 		String[] providerAndResource = url.split(":");
 		if (providerAndResource.length == 1) {
-			return "/" + ui.contextPath() + (url.startsWith("/") ? "" : "/") + url;
+			pageUrl = "/" + ui.contextPath() + (url.startsWith("/") ? "" : "/") + url;
 		}
-		return ui.pageLink(providerAndResource[0], providerAndResource[1]);
+		else {
+			pageUrl = ui.pageLink(providerAndResource[0], providerAndResource[1]);
+		}
+		if (params.length > 0) {
+			for (int i=0; i<params.length; i+=2) {
+				pageUrl += (pageUrl.contains("?") ? "&" : "?") + params[i] + "=" + params[i+1];
+			}
+		}
+		return pageUrl;
 	}
 
 	protected String getResourceUrl(UiUtils ui, String url) {

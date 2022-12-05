@@ -20,6 +20,11 @@
 
     def currentLocaleDisplay = account.defaultLocale.getDisplayLanguage(account.defaultLocale)
     currentLocaleDisplay = (currentLocaleDisplay == "Haitian" ? "Haitian Creole" : currentLocaleDisplay)
+
+    def editUserUrl = ui.pageLink("authenticationui", "account/userAccount", [ edit: true, userId: user.id ]);
+    if (sysAdmin) {
+        editUserUrl = authenticationUiConfig.getAdminEditUserPageUrl(ui, user.id)
+    }
 %>
 
 <style>
@@ -253,7 +258,7 @@
                             <ul class="float-left">
                                 <h3 >${ ui.message("authenticationui.actions") }</h3>
                                 <li class="float-left">
-                                    <a class="float-left" href="${ui.pageLink("authenticationui", "account/userAccount", [ edit: true, userId: user.id ])}">
+                                    <a class="float-left" href="${ editUserUrl }">
                                         <div class="row">
                                             <div class="col-1 col-lg-2">
                                                 <i class="fas fa-fw fa-user"></i>

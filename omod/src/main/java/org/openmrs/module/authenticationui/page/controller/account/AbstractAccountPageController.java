@@ -26,6 +26,7 @@ public abstract class AbstractAccountPageController {
         if (!ownAccount && !sysAdmin) {
             throw new APIException("authenticationui.unauthorizedPageError");
         }
+        model.addAttribute("authenticationUiConfig", authenticationUiConfig);
         model.addAttribute("user", user);
         model.addAttribute("ownAccount", ownAccount);
         model.addAttribute("sysAdmin", sysAdmin);
