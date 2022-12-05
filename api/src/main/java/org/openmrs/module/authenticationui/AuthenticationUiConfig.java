@@ -97,7 +97,9 @@ public class AuthenticationUiConfig {
 	}
 
 	public String getAdminEditUserPageUrl(UiUtils ui, Integer userId) {
-		return getPageUrl(ui, getConfig(ADMIN_EXTENSION, ADMIN_EDIT_USER_PAGE_URL, "authenticationui:account/userAccount"), "userId", userId);
+		String defaultPage = "authenticationui:account/userAccount";
+		Object[] params = {"edit", true, "userId", userId};
+		return getPageUrl(ui, getConfig(ADMIN_EXTENSION, ADMIN_EDIT_USER_PAGE_URL, defaultPage), params);
 	}
 
 	public String getAccountAdminPrivilege() {
