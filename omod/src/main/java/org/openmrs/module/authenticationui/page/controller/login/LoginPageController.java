@@ -20,7 +20,7 @@ import org.openmrs.LocationTag;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.web.AuthenticationSession;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
@@ -34,9 +34,8 @@ public class LoginPageController {
 	public String get(
 			PageModel pageModel, UiUtils ui,
 			@SpringBean("locationService") LocationService locationService,
+			@SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
 			PageRequest request) {
-
-		AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
 
 		if (Context.isAuthenticated()) {
 			return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
@@ -73,5 +72,9 @@ public class LoginPageController {
 		pageModel.addAttribute("locations", loginLocations);
 		pageModel.addAttribute("lastSessionLocation", lastLoginLocation);
 		return null;
+	}
+
+	public String post(UiUtils ui, @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
+		return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
 	}
 }

@@ -23,8 +23,11 @@
 
 	<properties>
 		<openmrsVersion>2.5.4</openmrsVersion>
+		<appframeworkVersion>2.17.0</appframeworkVersion>
+		<appuiVersion>1.16.0</appuiVersion>
 		<authenticationVersion>1.0.0-SNAPSHOT</authenticationVersion>
-		<uicommonsVersion>2.23.0-SNAPSHOT</uicommonsVersion>
+		<legacyuiVersion>1.13.0</legacyuiVersion>
+		<uicommonsVersion>2.23.0</uicommonsVersion>
 		<uiframeworkVersion>3.22.1</uiframeworkVersion>
 		<!-- Other configuration -->
 		<MODULE_ID>${project.artifactId}</MODULE_ID>
@@ -63,8 +66,26 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
+			<artifactId>appframework-api</artifactId>
+			<version>${appframeworkVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>appui-api</artifactId>
+			<version>${appuiVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
 			<artifactId>authentication-api</artifactId>
 			<version>${authenticationVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>legacyui-api</artifactId>
+			<version>${legacyuiVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -58,8 +58,26 @@
         </dependency>
         <dependency>
             <groupId>org.openmrs.module</groupId>
+            <artifactId>appframework-omod</artifactId>
+            <version>${appframeworkVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>appui-omod</artifactId>
+            <version>${appuiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
             <artifactId>authentication-omod</artifactId>
             <version>${authenticationVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>legacyui-omod</artifactId>
+            <version>${legacyuiVersion}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

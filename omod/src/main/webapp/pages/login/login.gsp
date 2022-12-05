@@ -10,7 +10,14 @@
         border-bottom: 0 !important;
         vertical-align: top;
     }
+    #login-form ul.select {
+        width: 850px;
+    }
+    #login-form p input[type=text], #login-form p input[type=password] {
+        width: 405px;
+    }
 </style>
+
 
 <% if (authenticationUiConfig.getLoginWarningIfNotChrome()) { %>
     <script type="text/javascript">
@@ -114,34 +121,43 @@
             <button class="confirm">${ ui.message("authenticationui.login.requestPasswordReset") }</button>
         <% } else { %>
             <p class="dialog-instructions">${ ui.message("authenticationui.login.cannotLoginInstructions") }</p>
-            <button class="confirm">${ ui.message("authenticationui.login.cancel") }</button>
+            <button class="cancel">${ ui.message("authenticationui.login.cancel") }</button>
         </div>
         <% } %>
     </div>
 </div>
 
 <script type="text/javascript">
-    document.getElementById('username').focus();
+    jq( document ).ready(function() {
+        jq('#username').focus();
 
-    updateSelectedOption = function() {
-        jq('#sessionLocation li').removeClass('selected');
-        var sessionLocationVal = jq('#sessionLocationInput').val();
+        updateSelectedOption = function() {
+            jq('#sessionLocation li').removeClass('selected');
+            var sessionLocationVal = jq('#sessionLocationInput').val();
 
-        if(parseInt(sessionLocationVal, 10) > 0){
-            jq('#sessionLocation li[value|=' + sessionLocationVal + ']').addClass('selected');
-            jq('#login-button').removeClass('disabled');
-            jq('#login-button').removeAttr('disabled');
-        }else{
-            jq('#login-button').addClass('disabled');
-            jq('#login-button').attr('disabled','disabled');
+            if (jq('#sessionLocation li').size() === 0) {
+                jq('#login-button').removeClass('disabled');
+                jq('#login-button').removeAttr('disabled');
+            }
+            else if(parseInt(sessionLocationVal, 10) > 0) {
+                jq('#sessionLocation li[value|=' + sessionLocationVal + ']').addClass('selected');
+                jq('#login-button').removeClass('disabled');
+                jq('#login-button').removeAttr('disabled');
+            }
+            else if (${ !authenticationUiConfig.requireLoginLocation }) {
+                jq('#login-button').removeClass('disabled');
+                jq('#login-button').removeAttr('disabled');
+            }
+            else {
+                jq('#login-button').addClass('disabled');
+                jq('#login-button').attr('disabled','disabled');
+            }
+        };
+
+        isUsernameValid = function(username) {
+            return (username && username.length !== 0 && username.indexOf(' ') < 0);
         }
-    };
 
-    isUsernameValild = function(username) {
-        return (username && username.length !== 0 && username.indexOf(' ') < 0);
-    }
-
-    jq(function() {
         updateSelectedOption();
 
         jq('#sessionLocation li').click( function() {

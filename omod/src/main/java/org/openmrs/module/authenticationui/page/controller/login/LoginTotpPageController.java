@@ -18,8 +18,9 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.UserLogin;
 import org.openmrs.module.authentication.web.AuthenticationSession;
-import org.openmrs.module.authenticationui.AuthenticationUiModuleConfig;
+import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
 
@@ -27,10 +28,9 @@ public class LoginTotpPageController {
 
 	public String get(
 			PageModel pageModel,
+			@SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
 			UiUtils ui,
 			PageRequest request) {
-
-		AuthenticationUiModuleConfig authenticationUiConfig = AuthenticationUiModuleConfig.getInstance();
 
 		if (Context.isAuthenticated()) {
 			return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
@@ -50,5 +50,9 @@ public class LoginTotpPageController {
 		pageModel.put("authenticationUiConfig", authenticationUiConfig);
 		pageModel.put("authenticationSession", session);
 		return null;
+	}
+
+	public String post(UiUtils ui, @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
+		return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
 	}
 }
