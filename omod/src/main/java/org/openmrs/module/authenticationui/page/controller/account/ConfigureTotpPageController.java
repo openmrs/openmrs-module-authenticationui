@@ -2,6 +2,7 @@ package org.openmrs.module.authenticationui.page.controller.account;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
@@ -10,12 +11,22 @@ import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class ConfigureTotpPageController extends AbstractAccountPageController {
+
+    @Override
+    protected void checkPermissionAndAddToModel(AuthenticationUiConfig authenticationUiConfig, User user, PageModel model) {
+        super.checkPermissionAndAddToModel(authenticationUiConfig, user, model);
+        boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
+        if (!ownAccount && !Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
+            throw new APIException("authenticationui.unauthorizedPageError");
+        }
+    }
 
     public String get(PageModel model,
                       @RequestParam(value = "userId", required = false) Integer userId,

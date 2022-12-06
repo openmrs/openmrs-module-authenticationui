@@ -22,6 +22,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PersonService;
@@ -36,6 +37,7 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -66,6 +68,10 @@ public class UserAccountPageController extends AbstractAccountPageController {
 
         try {
             checkPermissionAndAddToModel(authenticationUiConfig, account.getUser(), model);
+            boolean ownAccount = (account.getUser().equals(Context.getAuthenticatedUser()));
+            if (!ownAccount && !Context.hasPrivilege(PrivilegeConstants.GET_USERS)) {
+                throw new APIException("authenticationui.unauthorizedPageError");
+            }
         }
         catch (Exception e) {
             return "redirect:/index.htm";
@@ -110,6 +116,10 @@ public class UserAccountPageController extends AbstractAccountPageController {
         if (!errors.hasErrors()) {
             try {
                 checkPermissionAndAddToModel(authenticationUiConfig, account.getUser(), model);
+                boolean ownAccount = (account.getUser().equals(Context.getAuthenticatedUser()));
+                if (!ownAccount && !Context.hasPrivilege(PrivilegeConstants.EDIT_USERS)) {
+                    throw new APIException("authenticationui.unauthorizedPageError");
+                }
 
                 userService.saveUser(account.getUser());
                 Context.refreshAuthenticatedUser();

@@ -12,6 +12,7 @@ import org.openmrs.module.authentication.web.WebAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TwoFactorSetupPageController extends AbstractAccountPageController {
+
+    @Override
+    protected void checkPermissionAndAddToModel(AuthenticationUiConfig authenticationUiConfig, User user, PageModel model) {
+        super.checkPermissionAndAddToModel(authenticationUiConfig, user, model);
+        boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
+        if (!ownAccount && !Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
+            throw new APIException("authenticationui.unauthorizedPageError");
+        }
+    }
 
     public String get(PageModel model,
                       @RequestParam(value = "userId", required = false) Integer userId,

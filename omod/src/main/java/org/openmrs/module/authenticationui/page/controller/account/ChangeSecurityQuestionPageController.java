@@ -2,6 +2,7 @@ package org.openmrs.module.authenticationui.page.controller.account;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
@@ -10,6 +11,7 @@ import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,6 +30,15 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
         userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
         User user = userService.getUser(userId);
         return new ChangeSecurityQuestion(user, password, question, answer, confirmAnswer);
+    }
+
+    @Override
+    protected void checkPermissionAndAddToModel(AuthenticationUiConfig authenticationUiConfig, User user, PageModel model) {
+        super.checkPermissionAndAddToModel(authenticationUiConfig, user, model);
+        boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
+        if (!ownAccount && !Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
+            throw new APIException("authenticationui.unauthorizedPageError");
+        }
     }
 
     public String get(PageModel model,
