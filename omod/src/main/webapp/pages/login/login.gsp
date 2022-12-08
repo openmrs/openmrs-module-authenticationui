@@ -175,7 +175,7 @@
                     }
                     else {
                         jq("#password-reset-message").html('');
-                        jq.post(emr.fragmentActionLink("authenticationui", "login/resetPassword", "reset", { "username": username }));
+                        jq.post(emr.fragmentActionLink("authenticationui", "resetPassword", "reset", { "username": username }));
                         emr.successMessage('${ ui.escapeJs(ui.encodeHtmlContent(ui.message("authenticationui.login.requestPasswordResponse"))) }');
                         cannotLoginController.close();
                         jq("#password-reset-username").val("");

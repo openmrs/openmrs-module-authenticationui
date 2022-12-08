@@ -58,7 +58,7 @@ public class ResetPasswordFragmentController {
         try {
             Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
             String requestUrl = request.getRequestURL().toString();
-            String hostUrl = requestUrl.replace("resetPassword/reset.action", "resetPassword.page");
+            String hostUrl = requestUrl.replace("resetPassword/reset.action", "account/resetPassword.page");
             hostUrl += "?activationKey={activationKey}";
             administrationService.setGlobalProperty(OpenmrsConstants.GP_HOST_URL, hostUrl);
         }

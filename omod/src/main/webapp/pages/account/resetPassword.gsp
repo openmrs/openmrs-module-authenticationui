@@ -81,7 +81,7 @@
 
 ${ ui.includeFragment("appui", "header") }
 
-<h3>${ui.message("mirebalais.login.resetPassword")}</h3>
+<h3>${ui.message("authenticationui.login.resetPassword")}</h3>
 
 <div id="body-wrapper" class="container">
     <div id="reset-password-page">
