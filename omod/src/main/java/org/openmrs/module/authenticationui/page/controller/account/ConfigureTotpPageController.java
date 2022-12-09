@@ -44,7 +44,7 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
         }
 
         TotpAuthenticationScheme scheme = (TotpAuthenticationScheme) AuthenticationConfig.getAuthenticationScheme(schemeId);
-        String secret = scheme.generateSecret();
+        String secret = (String) model.getOrDefault("secret", scheme.generateSecret());
         String qrCodeUri = scheme.generateQrCodeUriForSecret(secret, user.getUsername());
 
         model.addAttribute("schemeId", schemeId);
@@ -86,6 +86,7 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
             sendErrorMessage("authenticationui.configureTotp.fail", e, request);
         }
 
+        model.addAttribute("secret", secret);
         return get(model, userId, schemeId, userService, authenticationUiConfig);
     }
 }

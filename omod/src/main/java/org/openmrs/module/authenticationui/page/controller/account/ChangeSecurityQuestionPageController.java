@@ -96,6 +96,9 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
                 return "redirect:authenticationui/account/userAccount.page?userId=" + securityQuestion.getUser().getId();
             }
             catch (Exception e) {
+                if ("Passwords don't match".equals(e.getMessage())) {
+                    e = new RuntimeException("authentication.error.invalidPassword", e);
+                }
                 sendErrorMessage("authenticationui.changeSecretQuestion.fail", e, request);
             }
         }

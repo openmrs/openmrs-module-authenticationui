@@ -63,7 +63,8 @@ public abstract class AbstractAccountPageController {
 
     protected void sendErrorMessage(String code, Exception e, HttpServletRequest request) {
         log.error("An error occurred", e);
-        request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, getMessage(code, e.getMessage()));
+        String errorMessage = getMessage(code, getMessage(e.getMessage()));
+        request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, errorMessage);
     }
 
     protected void setSuccessMessage(HttpServletRequest request, String code) {
