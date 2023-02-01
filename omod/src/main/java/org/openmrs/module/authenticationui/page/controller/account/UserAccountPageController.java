@@ -122,9 +122,12 @@ public class UserAccountPageController extends AbstractAccountPageController {
                 }
 
                 userService.saveUser(account.getUser());
-                Context.refreshAuthenticatedUser();
-                if (account.getDefaultLocale() != null) {
-                    Context.setLocale(account.getDefaultLocale());
+
+                if (ownAccount) {
+                    Context.refreshAuthenticatedUser();
+                    if (account.getDefaultLocale() != null) {
+                        Context.setLocale(account.getDefaultLocale());
+                    }
                 }
 
                 setSuccessMessage(request, "authenticationui.account.saved");
