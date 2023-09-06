@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>authenticationui</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>Authentication UI</name>
 	<description>Authentication UI for 2.x</description>
@@ -18,7 +18,7 @@
 		<connection>scm:git:git@github.com:openmrs/openmrs-module-authenticationui.git</connection>
 		<developerConnection>scm:git:git@github.com:openmrs/openmrs-module-authenticationui.git</developerConnection>
 		<url>https://github.com/openmrs/openmrs-module-authenticationui/</url>
-		<tag>HEAD</tag>
+		<tag>authenticationui-1.0.0</tag>
 	</scm>
 
 	<properties>
