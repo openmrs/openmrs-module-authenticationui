@@ -37,9 +37,14 @@ public class ResetPasswordFragmentController {
                       HttpServletRequest request) {
         try {
             Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+            Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
             User user = userService.getUserByUsernameOrEmail(username);
 
-            ensureHostUrl(administrationService, request);
+            // I don't know why this is implemented this way in OpenMRS core, but this is needed to get things to work
+            String requestUrl = request.getRequestURL().toString();
+            String hostUrl = requestUrl.replace("resetPassword/reset.action", "account/resetPassword.page");
+            hostUrl += "?activationKey={activationKey}";
+            administrationService.setGlobalProperty(OpenmrsConstants.GP_HOST_URL, hostUrl);
 
             userService.setUserActivationKey(user);
         }
@@ -48,21 +53,6 @@ public class ResetPasswordFragmentController {
         }
         finally {
             Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
-        }
-    }
-
-    /**
-     * I don't know why this is implemented this way in OpenMRS core, but this is needed to get things to work
-     */
-    private synchronized void ensureHostUrl(AdministrationService administrationService, HttpServletRequest request) {
-        try {
-            Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-            String requestUrl = request.getRequestURL().toString();
-            String hostUrl = requestUrl.replace("resetPassword/reset.action", "account/resetPassword.page");
-            hostUrl += "?activationKey={activationKey}";
-            administrationService.setGlobalProperty(OpenmrsConstants.GP_HOST_URL, hostUrl);
-        }
-        finally {
             Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
         }
     }
