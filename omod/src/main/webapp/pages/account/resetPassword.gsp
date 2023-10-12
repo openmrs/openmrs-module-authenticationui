@@ -10,9 +10,11 @@
     <link rel="shortcut icon" type="image/ico" href="/${ ui.contextPath() }/images/openmrs-favicon.ico"/>
     <link rel="icon" type="image/png\" href="/${ ui.contextPath() }/images/openmrs-favicon.png"/>
     ${ ui.resourceLinks() }
+    <script src="/${ui.contextPath()}/csrfguard" type="text/javascript"></script>
 </head>
 <body>
 <script type="text/javascript">
+    var OPENMRS_CONTEXT_PATH = '${ ui.contextPath() }';
     var errorMessageNewPassword = "${ui.message("authenticationui.changePassword.newPassword.required")}";
     var errorMessageConfirmPassword = "${ui.message("authenticationui.changePassword.confirmPassword.required")}";
     var errorMessageNewAndConfirmPassword = "${ui.message("authenticationui.changePassword.confirmPassword.doesNotMatch")}";
