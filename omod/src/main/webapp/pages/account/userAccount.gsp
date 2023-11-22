@@ -21,9 +21,10 @@
     def currentLocaleDisplay = account.defaultLocale.getDisplayLanguage(account.defaultLocale)
     currentLocaleDisplay = (currentLocaleDisplay == "Haitian" ? "Haitian Creole" : currentLocaleDisplay)
 
-    def editUserUrl = ui.pageLink("authenticationui", "account/userAccount", [ edit: true, userId: user.id ]);
+    def editUserUrl = ui.pageLink("authenticationui", "account/userAccount", [ edit: true, userId: user.id ])
+    def adminUserUrl = editUserUrl;
     if (sysAdmin) {
-        editUserUrl = authenticationUiConfig.getAdminEditUserPageUrl(ui, user.id)
+        adminUserUrl = authenticationUiConfig.getAdminEditUserPageUrl(ui, user.id)
     }
 %>
 
@@ -308,6 +309,20 @@
                                     </li>
                                 <% } %>
                                 <% if (sysAdmin) { %>
+                                    <% if (!adminUserUrl.equals(editUserUrl)) { %>
+                                        <li class="float-left">
+                                            <a class="float-left" href="${ adminUserUrl }">
+                                                <div class="row">
+                                                    <div class="col-1 col-lg-2">
+                                                        <i class="fas fa-fw fa-user"></i>
+                                                    </div>
+                                                    <div class="col-11 col-lg-10">
+                                                        ${ ui.message("authenticationui.action.administerAccount") }
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    <% } %>
                                     <%  if (account.locked) { %>
                                         <li class="float-left">
                                             <a class="float-left" href="javascript:unlockAccount();">
