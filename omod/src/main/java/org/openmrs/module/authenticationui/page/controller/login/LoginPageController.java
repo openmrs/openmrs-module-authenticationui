@@ -40,6 +40,9 @@ public class LoginPageController {
 		if (Context.isAuthenticated()) {
 			return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
 		}
+		else {
+			request.getRequest().getSession().invalidate();
+		}
 
 		AuthenticationSession authenticationSession = new AuthenticationSession(request.getRequest(), request.getResponse());
 		List<Location> loginLocations = new ArrayList<>();
