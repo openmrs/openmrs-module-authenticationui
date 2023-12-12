@@ -22,11 +22,12 @@
                     <input type="hidden" name="question" value="${question}"/>
                     ${ ui.message(question) }:
                 </label>
-                <input id="answer" type="password" name="answer" placeholder="${ ui.message("authenticationui.loginSecret.secret.placeholder") }"/>
+                <input id="answer" type="password" name="answer" tabindex="10" placeholder="${ ui.message("authenticationui.loginSecret.secret.placeholder") }"/>
             </p>
 
             <p>
-                <input id="login-button" class="confirm" type="submit" value="${ ui.message("authenticationui.loginSecret.button") }"/>
+                <input id="cancel-button" class="cancel" type="button" tabindex="30" value="${ ui.message("authenticationui.login.cancel") }" onclick="document.location.href='${ui.pageLink("authenticationui", "login/login")}'" />
+                <input id="login-button" class="confirm" type="submit" tabindex="20" value="${ ui.message("authenticationui.loginSecret.button") }"/>
             </p>
 
         </fieldset>

@@ -19,11 +19,12 @@
 
             <p>
                 <label for="code-input">${ ui.message("authenticationui.loginTotp.code") }</label>
-                <input id="code-input" type="text" name="code" value="" placeholder="${ ui.message("authenticationui.loginTotp.code.placeholder") }"/>
+                <input id="code-input" type="text" name="code" tabindex="10" value="" placeholder="${ ui.message("authenticationui.loginTotp.code.placeholder") }"/>
             </p>
 
             <p>
-                <input id="login-button" class="confirm" type="submit" value="${ ui.message("authenticationui.loginTotp.button") }"/>
+                <input id="cancel-button" class="cancel" type="button" tabindex="30" value="${ ui.message("authenticationui.login.cancel") }" onclick="document.location.href='${ui.pageLink("authenticationui", "login/login")}'" />
+                <input id="login-button" class="confirm" type="submit" tabindex="20" value="${ ui.message("authenticationui.loginTotp.button") }"/>
             </p>
 
         </fieldset>

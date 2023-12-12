@@ -37,11 +37,14 @@ public class LoginPageController {
 			@SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
 			PageRequest request) {
 
+		AuthenticationSession authenticationSession = new AuthenticationSession(request.getRequest(), request.getResponse());
 		if (Context.isAuthenticated()) {
 			return "redirect:" + authenticationUiConfig.getHomePageUrl(ui);
 		}
+		else {
+			authenticationSession.getHttpSession().removeAttribute(AuthenticationSession.AUTHENTICATION_USER_LOGIN);
+		}
 
-		AuthenticationSession authenticationSession = new AuthenticationSession(request.getRequest(), request.getResponse());
 		List<Location> loginLocations = new ArrayList<>();
 		if (authenticationUiConfig.isShowLoginLocations()) {
 			String locationTagName = authenticationUiConfig.getLoginLocationTagName();
