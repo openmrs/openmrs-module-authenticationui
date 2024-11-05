@@ -39,7 +39,7 @@
         <header>
             <div class="logo">
                 <a href="${ homePageUrl }">
-                    <img src="${ headerIconUrl }"/>
+                    <img class="login-header-image" src="${ headerIconUrl }"/>
                 </a>
             </div>
         </header>
