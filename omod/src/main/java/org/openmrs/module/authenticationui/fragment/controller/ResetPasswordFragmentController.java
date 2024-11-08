@@ -38,6 +38,7 @@ public class ResetPasswordFragmentController {
         try {
             Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
             Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+            Context.addProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
             User user = userService.getUserByUsernameOrEmail(username);
 
             // I don't know why this is implemented this way in OpenMRS core, but this is needed to get things to work
@@ -54,6 +55,7 @@ public class ResetPasswordFragmentController {
         finally {
             Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
             Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+            Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
         }
     }
 }
