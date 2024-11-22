@@ -12,10 +12,14 @@ import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Locale;
 
 import static org.openmrs.util.PrivilegeConstants.GET_USERS;
 
@@ -34,7 +38,7 @@ public class ResetPasswordPageController extends AbstractAccountPageController {
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, getMessage("activation.key.not.correct"));
                 return "redirect:index.htm";
             }
-            Context.setLocale(userService.getDefaultLocaleForUser(user));
+            Context.setLocale(getDefaultLocaleForUser(user));
             model.addAttribute("activationKey", activationKey);
             return null;
         }
@@ -60,7 +64,7 @@ public class ResetPasswordPageController extends AbstractAccountPageController {
             if (user == null) {
                 throw new InvalidActivationKeyException("activation.key.not.correct");
             }
-            Context.setLocale(userService.getDefaultLocaleForUser(user));
+            Context.setLocale(getDefaultLocaleForUser(user));
             if (StringUtils.isBlank(newPassword)) {
                 throw new ValidationException(ui.message("authenticationui.changePassword.newPassword.required"));
             }
@@ -87,5 +91,25 @@ public class ResetPasswordPageController extends AbstractAccountPageController {
         }
 
         return "redirect:index.htm";
+    }
+
+    // recreate the UserService getDefaultLocaleForUser method here since it requires authentication
+    private Locale getDefaultLocaleForUser(User user) {
+        Locale locale = null;
+		if (user != null) {
+			try {
+				String preferredLocale = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
+				if (StringUtils.isNotBlank(preferredLocale)) {
+					locale = LocaleUtility.fromSpecification(preferredLocale);
+				}
+			}
+			catch (Exception e) {
+				log.warn("Unable to parse user locale into a Locale", e);
+			}
+		}
+		if (locale == null) {
+			locale = Context.getLocale();
+		}
+		return locale;
     }
 }
