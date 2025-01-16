@@ -46,7 +46,8 @@ public class ResetPasswordFragmentController {
             String requestUrl = request.getRequestURL().toString();
             String hostUrl = requestUrl.replace("resetPassword/reset.action", "account/resetPassword.page");
             hostUrl += "?activationKey={activationKey}";
-            administrationService.setGlobalProperty(OpenmrsConstants.GP_HOST_URL, hostUrl);
+            administrationService.setGlobalProperty(OpenmrsConstants.GP_HOST_URL, hostUrl);  // pre-2.6.0
+            administrationService.setGlobalProperty("security.passwordResetUrl", hostUrl); // 2.6.0+
 
             userService.setUserActivationKey(user);
         }
