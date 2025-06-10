@@ -25,6 +25,7 @@ import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
+import org.openmrs.util.PrivilegeConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,15 +47,20 @@ public class LoginPageController {
 		}
 
 		List<Location> loginLocations = new ArrayList<>();
-		if (authenticationUiConfig.isShowLoginLocations()) {
-			String locationTagName = authenticationUiConfig.getLoginLocationTagName();
-			if (StringUtils.isNotBlank(locationTagName)) {
-				LocationTag loginLocationTag = locationService.getLocationTagByName(locationTagName);
-				loginLocations = locationService.getLocationsByTag(loginLocationTag);
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_LOCATIONS);
+			if (authenticationUiConfig.isShowLoginLocations()) {
+				String locationTagName = authenticationUiConfig.getLoginLocationTagName();
+				if (StringUtils.isNotBlank(locationTagName)) {
+					LocationTag loginLocationTag = locationService.getLocationTagByName(locationTagName);
+					loginLocations = locationService.getLocationsByTag(loginLocationTag);
+				} else {
+					loginLocations = locationService.getAllLocations();
+				}
 			}
-			else {
-				loginLocations = locationService.getAllLocations();
-			}
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_LOCATIONS);
 		}
 
 		Location lastLoginLocation = null;
