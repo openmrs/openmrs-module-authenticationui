@@ -9,6 +9,9 @@
     ui.includeJavascript("uicommons", "underscore-min.js", Integer.MAX_VALUE - 10)
     ui.includeJavascript("uicommons", "knockout-2.2.1.js", Integer.MAX_VALUE - 15)
     ui.includeJavascript("uicommons", "emr.js", Integer.MAX_VALUE - 15)
+    ui.includeJavascript("appui", "popper.min.js", Integer.MAX_VALUE - 14)
+    ui.includeJavascript("appui", "bootstrap.min.js", Integer.MAX_VALUE - 14)
+    ui.includeCss("appui", "bootstrap.min.css", Integer.MAX_VALUE - 14)
 
     ui.includeCss("uicommons", "styleguide/jquery-ui-1.9.2.custom.min.css", Integer.MAX_VALUE - 10)
 
@@ -44,7 +47,7 @@
             </div>
         </header>
 
-        <div id="body-wrapper" class="container">
+        <div id="body-wrapper" class="container-fluid">
 
             ${ ui.includeFragment("uicommons", "infoAndErrorMessage") }
 

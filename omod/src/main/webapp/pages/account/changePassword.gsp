@@ -89,27 +89,24 @@
 
 <form method="post" id="accountForm">
     <input type="hidden" name="userId" value="${user.id}"/>
-    <fieldset>
-        <% if (ownAccount) { %>
-            <p id="oldPasswordSection" class="emr_passwordDetails">
-                <label class="form-header" for="oldPassword">${ ui.message("authenticationui.changePassword.oldPassword") }</label>
-                <input type="password" id="oldPassword" name="oldPassword"  autocomplete="off"/>
-                ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "oldPassword" ])}
-            </p>
-        <% } %>
-        <p id="newPasswordSection" class="emr_passwordDetails">
-            <label class="form-header" for="newPassword">${ ui.message("authenticationui.changePassword.newPassword") }</label>
-            <input type="password" id="newPassword" name="newPassword"  autocomplete="off"/>
-            ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "newPassword" ])}
+    <% if (ownAccount) { %>
+        <p id="oldPasswordSection" class="emr_passwordDetails">
+            <label class="form-header" for="oldPassword">${ ui.message("authenticationui.changePassword.oldPassword") }</label>
+            <input type="password" id="oldPassword" name="oldPassword"  autocomplete="off"/>
+            ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "oldPassword" ])}
         </p>
-        <p id="confirmPasswordSection" class="emr_passwordDetails">
-            <label class="form-header" for="confirmPassword">${ ui.message("authenticationui.changePassword.confirmPassword") }</label>
-            <input type="password" id="confirmPassword" name="confirmPassword"  autocomplete="off"/>
-            ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "confirmPassword" ])}
-        </p>
-    </fieldset>
-
-    <div>
+    <% } %>
+    <p id="newPasswordSection" class="emr_passwordDetails">
+        <label class="form-header" for="newPassword">${ ui.message("authenticationui.changePassword.newPassword") }</label>
+        <input type="password" id="newPassword" name="newPassword"  autocomplete="off"/>
+        ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "newPassword" ])}
+    </p>
+    <p id="confirmPasswordSection" class="emr_passwordDetails">
+        <label class="form-header" for="confirmPassword">${ ui.message("authenticationui.changePassword.confirmPassword") }</label>
+        <input type="password" id="confirmPassword" name="confirmPassword"  autocomplete="off"/>
+        ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "confirmPassword" ])}
+    </p>
+    <div style="padding-top: 10px;">
         <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="javascript:window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
         <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
     </div>
