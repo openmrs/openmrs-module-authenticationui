@@ -5,16 +5,19 @@
     ])
 %>
 <style>
+    #login-location-section {
+        padding-top: 10px;
+    }
     .location-list-item {
         border-top: 1px solid #EFEFEF;
         border-bottom: 0 !important;
         vertical-align: top;
     }
     #login-form ul.select {
-        width: 850px;
+        width: unset;
     }
-    #login-form p input[type=text], #login-form p input[type=password] {
-        width: 405px;
+    #login-form input[type=text], #login-form input[type=password] {
+        min-width: 100%;
     }
 </style>
 
@@ -52,33 +55,57 @@
                 ${ ui.message("authenticationui.login.loginHeading") }
             </legend>
 
-            <p class="left">
-                <label for="username">
-                    ${ ui.message("authenticationui.login.username") }:
-                </label>
-                <input id="username" type="text" name="username" placeholder="${ ui.message("authenticationui.login.username.placeholder") }"/>
-            </p>
+            <div class="container-fluid">
 
-            <p class="left">
-                <label for="password">
-                    ${ ui.message("authenticationui.login.password") }:
-                </label>
-                <input id="password" type="password" name="password" placeholder="${ ui.message("authenticationui.login.password.placeholder") }"/>
-            </p>
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <label for="username">
+                            ${ ui.message("authenticationui.login.username") }:
+                        </label>
+                        <input id="username" type="text" name="username" placeholder="${ ui.message("authenticationui.login.username.placeholder") }"/>
+                    </div>
 
-            <!-- only show location selector if there are multiple locations to choose from -->
-            <% if (locations.size > 1) { %>
-                <p class="clear">
-                    <label for="sessionLocation">
-                        ${ ui.message("authenticationui.login.sessionLocation") }:
-                    </label>
-                    <ul id="sessionLocation" class="select">
-                        <% locations.sort { ui.format(it) }.each { %>
-                            <li class="location-list-item" value="${it.id}">${ui.format(it)}</li>
-                        <% } %>
-                    </ul>
-                </p>
-            <% } %>
+                    <div class="col">
+                        <label for="password">
+                            ${ ui.message("authenticationui.login.password") }:
+                        </label>
+                        <input id="password" type="password" name="password" placeholder="${ ui.message("authenticationui.login.password.placeholder") }"/>
+                    </div>
+                </div>
+
+                <!-- only show location selector if there are multiple locations to choose from -->
+                <% if (locations.size > 1) { %>
+                    <div id="login-location-section" class="row justify-content-center">
+                        <div class="col">
+                            <label for="sessionLocation">
+                                ${ ui.message("authenticationui.login.sessionLocation") }:
+                            </label>
+                            <ul id="sessionLocation" class="select">
+                                <% locations.sort { ui.format(it) }.each { %>
+                                    <li class="location-list-item" value="${it.id}">${ui.format(it)}</li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                <% } %>
+
+                <div id="login-location-section" class="row">
+                    <div class="col-auto mr-auto"></div>
+                    <div class="col-auto">
+                        <input id="login-button" class="confirm" type="submit" value="${ ui.message("authenticationui.login.button") }"/>
+                    </div>
+                </div>
+                <div id="login-location-section" class="row">
+                    <div class="col-auto mr-auto"></div>
+                    <div class="col-auto">
+                        <a id="cant-login" href="javascript:void(0)">
+                            <i class="icon-question-sign small"></i>
+                            ${ ui.message("authenticationui.login.cannotLogin") }
+                        </a>
+                    </div>
+                </div>
+
+            </div>
 
             <input type="hidden" id="sessionLocationInput" name="sessionLocation"
                 <% if (locations.size == 1) { %>
@@ -88,16 +115,6 @@
                     value="${lastSessionLocation.id}"
                 <% } %>
             />
-
-            <p>
-                <input id="login-button" class="confirm" type="submit" value="${ ui.message("authenticationui.login.button") }"/>
-            </p>
-            <p>
-                <a id="cant-login" href="javascript:void(0)">
-                    <i class="icon-question-sign small"></i>
-                    ${ ui.message("authenticationui.login.cannotLogin") }
-                </a>
-            </p>
 
         </fieldset>
 
