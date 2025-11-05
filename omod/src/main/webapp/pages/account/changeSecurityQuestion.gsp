@@ -44,34 +44,44 @@
 
 <form method="post" id="changeSecurityQuestionForm">
     <input type="hidden" name="userId" value="${user.id}"/>
-    <fieldset>
-        <p id="questionSection" class="emr_passwordDetails">
-            <label class="form-header" for="question">${ ui.message("authenticationui.changeSecretQuestion.secretQuestion") }</label>
-            <input type="text" id="question" name="question" autocomplete="off" value="${currentQuestion ? currentQuestion : ""}"/>
-            ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "question" ])}
-        </p>
-        <p id="answerSection" class="emr_passwordDetails">
-            <label class="form-header" for="answer">${ ui.message("authenticationui.changeSecretQuestion.secretAnswer") }</label>
-            <input type="password" id="answer" name="answer" autocomplete="off"/>
-            ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "answer" ])}
-        </p>
-        <p id="confirmAnswerSection" class="emr_passwordDetails">
-            <label class="form-header" for="confirmAnswer">${ ui.message("authenticationui.changeSecretQuestion.secretAnswerConfirmation") }</label>
-            <input type="password" id="confirmAnswer" name="confirmAnswer" autocomplete="off"/>
-            ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "confirmAnswer" ])}
-        </p>
-        <% if (ownAccount) { %>
-            <p id="passwordSection" class="emr_passwordDetails">
-                <label class="form-header" for="password">${ ui.message("authenticationui.changeSecretQuestion.secretAnswerPassword") }</label>
-                <input type="password" id="password" name="password" autocomplete="off"/>
-                ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "password" ])}
-            </p>
-        <% } %>
-    </fieldset>
 
-    <div>
-        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
-        <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
+    <div class="container-fluid">
+        <div class="row" id="questionSection" class="emr_passwordDetails">
+            <div class="col">
+                <label class="form-header" for="question">${ ui.message("authenticationui.changeSecretQuestion.secretQuestion") }</label>
+                <input type="text" id="question" name="question" autocomplete="off" value="${currentQuestion ? currentQuestion : ""}"/>
+                ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "question" ])}
+            </div>
+        </div>
+        <div class="row" id="answerSection" class="emr_passwordDetails">
+            <div class="col">
+                <label class="form-header" for="answer">${ ui.message("authenticationui.changeSecretQuestion.secretAnswer") }</label>
+                <input type="password" id="answer" name="answer" autocomplete="off"/>
+                ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "answer" ])}
+            </div>
+        </div>
+        <div class="row" id="confirmAnswerSection" class="emr_passwordDetails">
+            <div class="col">
+                <label class="form-header" for="confirmAnswer">${ ui.message("authenticationui.changeSecretQuestion.secretAnswerConfirmation") }</label>
+                <input type="password" id="confirmAnswer" name="confirmAnswer" autocomplete="off"/>
+                ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "confirmAnswer" ])}
+            </div>
+        </div>
+        <% if (ownAccount) { %>
+            <div class="row" id="passwordSection" class="emr_passwordDetails">
+                <div class="col">
+                    <label class="form-header" for="password">${ ui.message("authenticationui.changeSecretQuestion.secretAnswerPassword") }</label>
+                    <input type="password" id="password" name="password" autocomplete="off"/>
+                    ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "password" ])}
+                </div>
+            </div>
+        <% } %>
+        <div class="row" style="padding-top:10px;">
+            <div class="col">
+                <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
+                <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
+            </div>
+        </div>
     </div>
 
 </form>
