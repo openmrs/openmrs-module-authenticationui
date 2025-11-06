@@ -19,6 +19,9 @@
     #login-form input[type=text], #login-form input[type=password] {
         min-width: 100%;
     }
+    #login-page fieldset {
+        display: block;
+    }
 </style>
 
 
