@@ -106,6 +106,14 @@
         <input type="password" id="confirmPassword" name="confirmPassword"  autocomplete="off"/>
         ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "confirmPassword" ])}
     </p>
+    <% if (!ownAccount) { %>
+        <p id="confirmPasswordSection" class="emr_passwordDetails">
+            <input type="checkbox" name="passwordChangeRequired" value="true" checked="checked" />
+            <label for="passwordChangeRequired">${ ui.message("User.forceChange.description") }</label>
+            ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "passwordChangeRequired" ])}
+        </p>
+    <% } %>
+
     <div style="padding-top: 10px;">
         <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="javascript:window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
         <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
