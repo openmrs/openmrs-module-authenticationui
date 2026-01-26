@@ -87,6 +87,14 @@
 
 <h3>${ui.message("authenticationui.changePassword.title")}</h3>
 
+<% if (user.userProperties.forcePassword == 'true') { %>
+    <div class="note-container">
+        <div class="note warning" style="width: 100%;">
+            ${ui.message("authenticationui.changePassword.passwordExpiredMessage")}
+        </div>
+    </div>
+<% } %>
+
 <form method="post" id="accountForm">
     <input type="hidden" name="userId" value="${user.id}"/>
     <% if (ownAccount) { %>
