@@ -6,6 +6,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
+import org.openmrs.module.authentication.web.AuthenticationSession;
 import org.openmrs.module.authentication.web.TotpAuthenticationScheme;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
@@ -16,6 +17,7 @@ import org.openmrs.util.Security;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class ConfigureTotpPageController extends AbstractAccountPageController {
 
@@ -61,10 +63,14 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
                        @SpringBean("userService") UserService userService,
                        @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
+                       HttpSession session,
                        PageModel model) {
 
         userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
         User user = userService.getUser(userId);
+        boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
+
+        AuthenticationSession authenticationSession = new AuthenticationSession(session);
 
         TotpAuthenticationScheme scheme = (TotpAuthenticationScheme) AuthenticationConfig.getAuthenticationScheme(schemeId);
         try {
@@ -79,6 +85,9 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
             userService.setUserProperty(user, scheme.getSecretUserPropertyName(), Security.encrypt(secret));
             user.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
             userService.saveUser(user);
+            if (ownAccount) {
+                authenticationSession.refreshAuthenticatedUser();
+            }
             setSuccessMessage(request, "authenticationui.configureTotp.success");
             return "redirect:authenticationui/account/userAccount.page?userId=" + user.getId();
         }

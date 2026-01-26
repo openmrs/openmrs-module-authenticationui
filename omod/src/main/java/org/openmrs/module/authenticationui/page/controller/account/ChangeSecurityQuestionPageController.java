@@ -5,6 +5,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.authentication.web.AuthenticationSession;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -16,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class ChangeSecurityQuestionPageController extends AbstractAccountPageController {
 
@@ -65,9 +67,11 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
                        @SpringBean("userService") UserService userService,
                        @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
+                       HttpSession session,
                        PageModel model) {
 
         boolean ownAccount = (securityQuestion.getUser().equals(Context.getAuthenticatedUser()));
+        AuthenticationSession authenticationSession = new AuthenticationSession(session);
 
         // Validate submission
         if (ownAccount) {
@@ -91,6 +95,9 @@ public class ChangeSecurityQuestionPageController extends AbstractAccountPageCon
                 if (StringUtils.isNotBlank(schemeId)) {
                     securityQuestion.getUser().setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
                     userService.saveUser(securityQuestion.getUser());
+                }
+                if (ownAccount) {
+                    authenticationSession.refreshAuthenticatedUser();
                 }
                 setSuccessMessage(request, "authenticationui.changeSecretQuestion.success");
                 return "redirect:authenticationui/account/userAccount.page?userId=" + securityQuestion.getUser().getId();

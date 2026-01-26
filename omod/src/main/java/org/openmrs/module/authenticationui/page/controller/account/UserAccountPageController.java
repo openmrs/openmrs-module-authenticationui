@@ -29,6 +29,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
+import org.openmrs.module.authentication.web.AuthenticationSession;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -42,6 +43,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Locale;
 
 public class UserAccountPageController extends AbstractAccountPageController {
@@ -93,7 +95,10 @@ public class UserAccountPageController extends AbstractAccountPageController {
                        @SpringBean("userService") UserService userService,
                        @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        PageModel model,
+                       HttpSession session,
                        HttpServletRequest request) {
+
+        AuthenticationSession authenticationSession = new AuthenticationSession(session);
 
         requireField(errors, "givenName", account.getGivenName(), "authenticationui.account.givenName");
         requireField(errors, "familyName", account.getFamilyName(), "authenticationui.account.familyName");
@@ -124,7 +129,7 @@ public class UserAccountPageController extends AbstractAccountPageController {
                 userService.saveUser(account.getUser());
 
                 if (ownAccount) {
-                    Context.refreshAuthenticatedUser();
+                    authenticationSession.refreshAuthenticatedUser();
                     if (account.getDefaultLocale() != null) {
                         Context.setLocale(account.getDefaultLocale());
                     }

@@ -7,6 +7,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.AuthenticationScheme;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
+import org.openmrs.module.authentication.web.AuthenticationSession;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authentication.web.WebAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
@@ -16,6 +17,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,11 +77,13 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
                        @SpringBean("userService") UserService userService,
                        @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
+                       HttpSession session,
                        PageModel model) {
 
         userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
         User user = userService.getUser(userId);
         boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
+        AuthenticationSession authenticationSession = new AuthenticationSession(session);
 
         try {
             checkPermissionAndAddToModel(authenticationUiConfig, user, model);
@@ -113,6 +117,7 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
                 user.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
             }
             userService.saveUser(user);
+            authenticationSession.refreshAuthenticatedUser();
             setSuccessMessage(request, "authenticationui.configure2fa.success");
             return "redirect:authenticationui/account/userAccount.page?userId=" + user.getId();
         }
