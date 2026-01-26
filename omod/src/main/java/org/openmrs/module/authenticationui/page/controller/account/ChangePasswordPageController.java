@@ -5,17 +5,20 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.authentication.web.AuthenticationSession;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class ChangePasswordPageController extends AbstractAccountPageController {
 
@@ -54,10 +57,12 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
     }
 
     public String post(@MethodParam("getChangePassword") @BindParams ChangePassword changePassword,
+                       @RequestParam(value = "passwordChangeRequired", defaultValue = "false") boolean passwordChangeRequired,
                        BindingResult errors,
                        @SpringBean("userService") UserService userService,
                        @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
+                       HttpSession session,
                        PageModel model) {
 
         boolean ownAccount = (changePassword.getUser().equals(Context.getAuthenticatedUser()));
@@ -72,15 +77,22 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
             rejectValue(errors, "confirmPassword", "authenticationui.changePassword.confirmPassword.doesNotMatch");
         }
 
-        if (!errors.hasErrors()) {
+        if (errors == null || !errors.hasErrors()) {
+            AuthenticationSession authenticationSession = new AuthenticationSession(session);
             try {
                 checkPermissionAndAddToModel(authenticationUiConfig, changePassword.getUser(), model);
                 OpenmrsUtil.validatePassword(changePassword.getUser().getUsername(), changePassword.getNewPassword(), changePassword.getUser().getSystemId());
                 if (ownAccount) {
                     userService.changePassword(changePassword.getOldPassword(), changePassword.getNewPassword());
+                    userService.setUserProperty(changePassword.getUser(), OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "false");
+                    authenticationSession.refreshAuthenticatedUser();
                 }
                 else {
                     userService.changePassword(changePassword.getUser(), changePassword.getNewPassword());
+                    if (passwordChangeRequired) {
+                        userService.setUserProperty(changePassword.getUser(), OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
+                        authenticationSession.refreshAuthenticatedUser();
+                    }
                 }
                 setSuccessMessage(request, "authenticationui.changePassword.success");
                 return "redirect:authenticationui/account/userAccount.page?userId=" + changePassword.getUser().getId();
@@ -97,7 +109,7 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
         return get(changePassword, authenticationUiConfig, model);
     }
 
-    private static class ChangePassword {
+    public static class ChangePassword {
         private final User user;
         private final String oldPassword;
         private final String newPassword;
