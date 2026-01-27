@@ -117,7 +117,7 @@
     <% if (!ownAccount) { %>
         <p id="confirmPasswordSection" class="emr_passwordDetails">
             <input type="checkbox" name="passwordChangeRequired" value="true" checked="checked" />
-            <label for="passwordChangeRequired">${ ui.message("User.forceChange.description") }</label>
+            <label for="passwordChangeRequired">${ ui.message("authenticationui.changePassword.requirePasswordChange") }</label>
             ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "passwordChangeRequired" ])}
         </p>
     <% } %>
