@@ -50,14 +50,13 @@ public class UserAccountPageController extends AbstractAccountPageController {
 
     protected final Log log = LogFactory.getLog(getClass());
 
-    public Account getAccount(@RequestParam(value = "userId", required = false) Integer userId,
+    public Account getAccount(@RequestParam(value = "userId", required = false) String userId,
                               @SpringBean("userService") UserService userService,
                               @SpringBean("personService") PersonService personService,
                               @SpringBean("locationService") LocationService locationService,
                               @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
 
-        userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
-        User user = userService.getUser(userId);
+        User user = getUserOrAuthenticatedUser(userService, userId);
         return new Account(user, personService, locationService, authenticationUiConfig);
     }
 

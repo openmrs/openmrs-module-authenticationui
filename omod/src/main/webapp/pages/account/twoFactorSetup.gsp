@@ -59,7 +59,7 @@
             <div class="section" id="options-title">
                 ${ui.message("authenticationui.configure2fa.changeMethod")}
             </div>
-            <form id="options-form" method="post">
+            <form id="options-form" method="post" action="${ui.pageLink("authenticationui", "account/twoFactorSetup")}">
                 <input type="hidden" name="userId" value="${user.userId}"/>
                 <div id="options-choices">
                     <div class="option-choice">

@@ -15,8 +15,9 @@
     <% } %>
 </div>
 
-<form method="post" id="totpVerificationForm">
+<form method="post" id="totpVerificationForm" action="${ui.pageLink("authenticationui", "account/configureTotp")}">
     <input type="hidden" name="userId" value="${user.id}"/>
+    <input type="hidden" name="schemeId" value="${schemeId}"/>
     <div>
         <img src="${qrCodeUri}" />
     </div>
