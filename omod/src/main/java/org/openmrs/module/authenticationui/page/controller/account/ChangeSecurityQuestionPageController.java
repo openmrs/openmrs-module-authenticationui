@@ -22,15 +22,14 @@ import javax.servlet.http.HttpSession;
 public class ChangeSecurityQuestionPageController extends AbstractAccountPageController {
 
     public ChangeSecurityQuestion getChangeSecurityQuestion(
-            @RequestParam(value = "userId", required = false) Integer userId,
+            @RequestParam(value = "userId", required = false) String userId,
             @RequestParam(value = "password", required = false) String password,
             @RequestParam(value = "question", required = false) String question,
             @RequestParam(value = "answer", required = false) String answer,
             @RequestParam(value = "confirmAnswer", required = false) String confirmAnswer,
             @SpringBean("userService") UserService userService) {
 
-        userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
-        User user = userService.getUser(userId);
+        User user = getUserOrAuthenticatedUser(userService, userId);
         return new ChangeSecurityQuestion(user, password, question, answer, confirmAnswer);
     }
 

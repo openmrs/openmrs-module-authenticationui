@@ -42,8 +42,9 @@
     <% } %>
 </div>
 
-<form method="post" id="changeSecurityQuestionForm">
+<form method="post" id="changeSecurityQuestionForm" action="${ui.pageLink("authenticationui", "account/changeSecurityQuestion")}">
     <input type="hidden" name="userId" value="${user.id}"/>
+    <input type="hidden" name="schemeId" value="${schemeId}"/>
 
     <div class="container-fluid">
         <div class="row" id="questionSection" class="emr_passwordDetails">

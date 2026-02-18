@@ -80,8 +80,8 @@
 <div class="account-section">
     <% if (editMode) { %>
 
-        <form method="post" id="accountForm" autocomplete="off">
-
+        <form method="post" id="accountForm" autocomplete="off" action="${ui.pageLink("authenticationui", "account/userAccount")}">
+            <input type="hidden" name="userId" value="${user.id}"/>
             ${ ui.includeFragment("uicommons", "field/text", [
                     label: ui.message("authenticationui.account.givenName"),
                     formFieldName: "givenName",

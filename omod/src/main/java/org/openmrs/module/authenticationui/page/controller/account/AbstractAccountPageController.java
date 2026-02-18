@@ -3,6 +3,7 @@ package org.openmrs.module.authenticationui.page.controller.account;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.module.uicommons.UiCommonsConstants;
@@ -19,6 +20,18 @@ import java.util.List;
 public abstract class AbstractAccountPageController {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+
+    protected User getUserOrAuthenticatedUser(UserService userService, String userId) {
+        if (StringUtils.isBlank(userId)) {
+            return Context.getAuthenticatedUser();
+        }
+        try {
+            return userService.getUser(Integer.parseInt(userId));
+        }
+        catch (Exception e) {
+            return userService.getUserByUuid(userId);
+        }
+    }
 
     protected void checkPermissionAndAddToModel(AuthenticationUiConfig authenticationUiConfig, User user, PageModel model) {
         boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));

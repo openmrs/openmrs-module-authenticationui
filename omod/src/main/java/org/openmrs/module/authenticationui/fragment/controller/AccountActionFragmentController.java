@@ -25,11 +25,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public class AccountActionFragmentController {
 
-    public FragmentActionResult unlock(@RequestParam("userId") User user,
+    private User getUser(UserService userService, String userId) {
+        User user = userService.getUserByUuid(userId);
+        if (user == null) {
+            user = userService.getUser(Integer.parseInt(userId));
+        }
+        if (user == null) {
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
+        return user;
+    }
+
+    public FragmentActionResult unlock(@RequestParam("userId") String userId,
                                        @SpringBean("userService") UserService userService,
                                        UiUtils ui) {
 
         try {
+            User user = getUser(userService, userId);
             user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
             user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS);
             userService.saveUser(user);
@@ -40,11 +52,12 @@ public class AccountActionFragmentController {
         }
     }
 
-    public FragmentActionResult disable(@RequestParam("userId") User user,
+    public FragmentActionResult disable(@RequestParam("userId") String userId,
                                        @SpringBean("userService") UserService userService,
                                        UiUtils ui) {
 
         try {
+            User user = getUser(userService, userId);
             userService.retireUser(user, "Disabled on account page");
             return new SuccessResult(ui.message("authenticationui.account.disable.success"));
         }
@@ -53,11 +66,12 @@ public class AccountActionFragmentController {
         }
     }
 
-    public FragmentActionResult enable(@RequestParam("userId") User user,
+    public FragmentActionResult enable(@RequestParam("userId") String userId,
                                        @SpringBean("userService") UserService userService,
                                        UiUtils ui) {
 
         try {
+            User user = getUser(userService, userId);
             userService.unretireUser(user);
             return new SuccessResult(ui.message("authenticationui.account.enable.success"));
         }

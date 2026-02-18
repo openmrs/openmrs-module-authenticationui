@@ -95,7 +95,7 @@
     </div>
 <% } %>
 
-<form method="post" id="accountForm">
+<form method="post" id="accountForm" action="${ui.pageLink("authenticationui", "account/changePassword")}">
     <input type="hidden" name="userId" value="${user.id}"/>
     <% if (ownAccount) { %>
         <p id="oldPasswordSection" class="emr_passwordDetails">

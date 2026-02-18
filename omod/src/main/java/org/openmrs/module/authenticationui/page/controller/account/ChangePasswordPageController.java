@@ -22,14 +22,13 @@ import javax.servlet.http.HttpSession;
 
 public class ChangePasswordPageController extends AbstractAccountPageController {
 
-    public ChangePassword getChangePassword(@RequestParam(value = "userId", required = false) Integer userId,
+    public ChangePassword getChangePassword(@RequestParam(value = "userId", required = false) String userId,
                                             @RequestParam(value = "oldPassword", required = false) String oldPassword,
                                             @RequestParam(value = "newPassword", required = false) String newPassword,
                                             @RequestParam(value = "confirmPassword", required = false) String confirmPassword,
                                             @SpringBean("userService") UserService userService) {
 
-        userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
-        User user = userService.getUser(userId);
+        User user = getUserOrAuthenticatedUser(userService, userId);
         return new ChangePassword(user, oldPassword, newPassword, confirmPassword);
     }
 

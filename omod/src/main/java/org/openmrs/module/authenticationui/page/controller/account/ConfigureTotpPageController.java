@@ -31,13 +31,12 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
     }
 
     public String get(PageModel model,
-                      @RequestParam(value = "userId", required = false) Integer userId,
+                      @RequestParam(value = "userId", required = false) String userId,
                       @RequestParam(value = "schemeId", required = false) String schemeId,
                       @SpringBean("userService") UserService userService,
                       @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig) {
 
-        userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
-        User user = userService.getUser(userId);
+        User user = getUserOrAuthenticatedUser(userService, userId);
         try {
             checkPermissionAndAddToModel(authenticationUiConfig, user, model);
         }
@@ -56,7 +55,7 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
         return "account/configureTotp";
     }
 
-    public String post(@RequestParam(value = "userId", required = false) Integer userId,
+    public String post(@RequestParam(value = "userId", required = false) String userId,
                        @RequestParam(value = "schemeId", required = false) String schemeId,
                        @RequestParam(value = "secret") String secret,
                        @RequestParam(value = "code", required = false) String code,
@@ -66,8 +65,7 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
                        HttpSession session,
                        PageModel model) {
 
-        userId = (userId == null ? Context.getAuthenticatedUser().getUserId() : userId);
-        User user = userService.getUser(userId);
+        User user = getUserOrAuthenticatedUser(userService, userId);
         boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
 
         AuthenticationSession authenticationSession = new AuthenticationSession(session);
