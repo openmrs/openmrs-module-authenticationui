@@ -13,8 +13,12 @@
  */
 package org.openmrs.module.authenticationui.fragment.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.authentication.web.EmailAuthenticationScheme;
+import org.openmrs.notification.Message;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
@@ -22,6 +26,9 @@ import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 public class AccountActionFragmentController {
 
@@ -77,6 +84,39 @@ public class AccountActionFragmentController {
         }
         catch (Exception e) {
             return new FailureResult(ui.message("authenticationui.account.enable.fail"));
+        }
+    }
+
+    public FragmentActionResult sendEmailVerification(@RequestParam("userId") String userId,
+                                                      @SpringBean("userService") UserService userService,
+                                                      HttpServletRequest request,
+                                                      UiUtils ui) {
+        try {
+            User user = getUser(userService, userId);
+            String email = user.getEmail();
+            if (StringUtils.isBlank(email)) {
+                return new FailureResult(ui.message("authenticationui.account.email.verificationSendFail"));
+            }
+
+            String token = UUID.randomUUID().toString();
+            long expiry = System.currentTimeMillis() + (24 * 60 * 60_000L);
+            user.setUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFICATION_TOKEN, token);
+            user.setUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFICATION_TOKEN_EXPIRY, String.valueOf(expiry));
+            userService.saveUser(user);
+
+            String requestUrl = request.getRequestURL().toString();
+            String baseUrl = requestUrl.substring(0, requestUrl.indexOf("/authenticationui/"));
+            String verifyUrl = baseUrl + "/authenticationui/account/verifyEmail.page?userId=" + user.getUserId() + "&token=" + token;
+
+            String subject = ui.message("authenticationui.verifyEmail.emailSubject");
+            String body = ui.message("authenticationui.verifyEmail.emailBody", new Object[]{ verifyUrl });
+            Message message = Context.getMessageService().createMessage(email, "", subject, body);
+            Context.getMessageService().sendMessage(message);
+
+            return new SuccessResult(ui.message("authenticationui.account.email.verificationSent"));
+        }
+        catch (Exception e) {
+            return new FailureResult(ui.message("authenticationui.account.email.verificationSendFail"));
         }
     }
 

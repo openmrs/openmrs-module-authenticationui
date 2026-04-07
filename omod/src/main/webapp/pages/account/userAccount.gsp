@@ -73,6 +73,15 @@
             emr.handleError(xhr);
         });
     }
+
+    function sendEmailVerification() {
+        jq.post(emr.fragmentActionLink("authenticationui", "accountAction", "sendEmailVerification", { userId: ${user.id} }), function (data) {
+            emr.successMessage(data.message);
+            jq('#send-email-verification-action').hide();
+        }, 'json').error(function(xhr) {
+            emr.handleError(xhr);
+        });
+    }
 </script>
 
 <h2>${ accountTitle }</h2>
@@ -214,8 +223,25 @@
 
                         <div class="row">
                             <span class="col-4 account-info-label">${ ui.message("authenticationui.account.email") }: </span>
-                            <span class="col-8 account-info-value">${ account.email ?: '' }</span>
+                            <span class="col-8 account-info-value">
+                                ${ account.email ?: '' }
+                                <% if (account.email) { %>
+                                    <% if (account.emailVerified) { %>
+                                        <span class="label label-success">${ ui.message("authenticationui.account.email.verified") }</span>
+                                    <% } else { %>
+                                        <span class="label label-warning">${ ui.message("authenticationui.account.email.notVerified") }</span>
+                                    <% } %>
+                                <% } %>
+                            </span>
                         </div>
+                        <% if (ownAccount && account.email && !account.emailVerified) { %>
+                        <div id="send-email-verification-action" class="row">
+                            <span class="col-4"></span>
+                            <span class="col-8">
+                                <a href="javascript:sendEmailVerification();">${ ui.message("authenticationui.action.sendEmailVerification") }</a>
+                            </span>
+                        </div>
+                        <% } %>
 
                         <% if (account.phoneNumberAttributeType) { %>
                         <div class="row">

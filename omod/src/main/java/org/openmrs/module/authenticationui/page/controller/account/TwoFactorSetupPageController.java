@@ -91,19 +91,22 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
                 AuthenticationScheme scheme = AuthenticationConfig.getAuthenticationScheme(schemeId);
                 if (scheme instanceof WebAuthenticationScheme) {
                     WebAuthenticationScheme webScheme = (WebAuthenticationScheme) scheme;
-                    if (StringUtils.isNotBlank(webScheme.getUserConfigurationPage())) {
-                        String url = webScheme.getUserConfigurationPage().replace("{schemeId}", schemeId);
-                        // If a user is not editing their own account, and the configuration page does not support a configurable userId, fail
-                        if (!ownAccount) {
-                            if (!url.contains("{userId}")) {
-                                throw new APIException("authenticationui.unauthorizedPageError");
+                    if (webScheme.isUserConfigurationRequired(user)) {
+                        String configPage = webScheme.getUserConfigurationPage();
+                        if (StringUtils.isNotBlank(configPage)) {
+                            String url = configPage.replace("{schemeId}", schemeId);
+                            // If a user is not editing their own account, and the configuration page does not support a configurable userId, fail
+                            if (!ownAccount) {
+                                if (!url.contains("{userId}")) {
+                                    throw new APIException("authenticationui.unauthorizedPageError");
+                                }
+                                url = url.replace("{userId}", user.getUserId().toString());
                             }
-                            url = url.replace("{userId}", user.getUserId().toString());
+                            else {
+                                url = url.replace("{userId}", "");
+                            }
+                            return "redirect:" + url;
                         }
-                        else {
-                            url = url.replace("{userId}", "");
-                        }
-                        return "redirect:" + url;
                     }
                 }
             }
