@@ -20,6 +20,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.AuthenticationSession;
 import org.openmrs.module.authentication.web.EmailAuthenticationScheme;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
@@ -89,6 +90,7 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
         User user = getUserOrAuthenticatedUser(userService, userId);
         boolean ownAccount = user.equals(Context.getAuthenticatedUser());
         AuthenticationSession authenticationSession = new AuthenticationSession(session);
+        EmailAuthenticationScheme scheme = (EmailAuthenticationScheme) AuthenticationConfig.getAuthenticationScheme(schemeId);
 
         try {
             checkPermissionAndAddToModel(authenticationUiConfig, user, model);
@@ -99,11 +101,12 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
                     throw new RuntimeException(getMessage("authenticationui.configureEmail.email.invalid"));
                 }
                 String generatedCode = generateCode();
+                sendCode(email, generatedCode);
+
                 long expiry = System.currentTimeMillis() + (CODE_EXPIRY_MINUTES * 60_000L);
                 session.setAttribute(SESSION_KEY_PENDING_EMAIL, email);
                 session.setAttribute(SESSION_KEY_CODE, generatedCode);
                 session.setAttribute(SESSION_KEY_EXPIRY, expiry);
-                sendCode(email, generatedCode);
 
                 String redirectUrl = "authenticationui/account/configureEmail.page";
                 if (StringUtils.isNotBlank(userId)) {
@@ -137,9 +140,7 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
 
                 // Code is valid — update the user
                 user.setEmail(pendingEmail);
-                user.setUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFIED_EMAIL, pendingEmail);
-                user.removeUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFICATION_TOKEN);
-                user.removeUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFICATION_TOKEN_EXPIRY);
+                user.setUserProperty(scheme.getVerifiedEmailUserPropertyName(), pendingEmail);
                 if (StringUtils.isNotBlank(schemeId)) {
                     user.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
                 }

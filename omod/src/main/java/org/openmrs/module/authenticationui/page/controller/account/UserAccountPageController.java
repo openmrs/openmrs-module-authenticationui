@@ -30,7 +30,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.AuthenticationSession;
-import org.openmrs.module.authentication.web.EmailAuthenticationScheme;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -124,14 +123,6 @@ public class UserAccountPageController extends AbstractAccountPageController {
                 boolean ownAccount = (account.getUser().equals(Context.getAuthenticatedUser()));
                 if (!ownAccount && !Context.hasPrivilege(PrivilegeConstants.EDIT_USERS)) {
                     throw new APIException("authenticationui.unauthorizedPageError");
-                }
-
-                // If email has changed, clear the verified email property so re-verification is required
-                String verifiedEmail = account.getUser().getUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFIED_EMAIL);
-                if (StringUtils.isNotBlank(verifiedEmail) && !verifiedEmail.equals(account.getEmail())) {
-                    account.getUser().removeUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFIED_EMAIL);
-                    account.getUser().removeUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFICATION_TOKEN);
-                    account.getUser().removeUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFICATION_TOKEN_EXPIRY);
                 }
 
                 userService.saveUser(account.getUser());
@@ -277,14 +268,6 @@ public class UserAccountPageController extends AbstractAccountPageController {
                     user.removeUserProperty(getDefaultLocationUserProperty());
                 }
             }
-        }
-
-        public boolean isEmailVerified() {
-            String email = user.getEmail();
-            if (StringUtils.isBlank(email)) {
-                return false;
-            }
-            return email.equals(user.getUserProperty(EmailAuthenticationScheme.USER_PROPERTY_VERIFIED_EMAIL));
         }
 
         public String getTwoFactorAuthenticationMethod() {
