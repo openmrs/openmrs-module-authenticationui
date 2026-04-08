@@ -27,6 +27,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.context.AuthenticationScheme;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.AuthenticationSession;
@@ -44,6 +45,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class UserAccountPageController extends AbstractAccountPageController {
@@ -270,8 +273,13 @@ public class UserAccountPageController extends AbstractAccountPageController {
             }
         }
 
-        public String getTwoFactorAuthenticationMethod() {
-            return user.getUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE);
+        public List<String> getTwoFactorAuthenticationMethods() {
+            AuthenticationScheme authenticationScheme = AuthenticationConfig.getAuthenticationScheme();
+            if (authenticationScheme instanceof TwoFactorAuthenticationScheme) {
+                TwoFactorAuthenticationScheme tfaScheme = (TwoFactorAuthenticationScheme) authenticationScheme;
+                return tfaScheme.getSecondaryAuthenticationSchemeIdsForUser(user);
+            }
+            return new ArrayList<>();
         }
 
         public PersonAttributeType getPhoneNumberAttributeType() {

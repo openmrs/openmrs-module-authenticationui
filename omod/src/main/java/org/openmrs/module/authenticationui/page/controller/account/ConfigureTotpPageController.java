@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
+import org.openmrs.api.context.AuthenticationScheme;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.AuthenticationSession;
@@ -81,13 +82,18 @@ public class ConfigureTotpPageController extends AbstractAccountPageController {
                 throw new RuntimeException("authenticationui.configureTotp.code.invalid");
             }
             userService.setUserProperty(user, scheme.getSecretUserPropertyName(), Security.encrypt(secret));
-            user.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
+
+            AuthenticationScheme authenticationScheme = AuthenticationConfig.getAuthenticationScheme();
+            if (authenticationScheme instanceof TwoFactorAuthenticationScheme) {
+                TwoFactorAuthenticationScheme tfaScheme = (TwoFactorAuthenticationScheme) authenticationScheme;
+                tfaScheme.addSecondaryAuthenticationSchemeForUser(user, schemeId);
+            }
             userService.saveUser(user);
             if (ownAccount) {
                 authenticationSession.refreshAuthenticatedUser();
             }
             setSuccessMessage(request, "authenticationui.configureTotp.success");
-            return "redirect:authenticationui/account/userAccount.page?userId=" + user.getId();
+            return "redirect:authenticationui/account/twoFactorSetup.page?userId=" + user.getId();
         }
         catch (Exception e) {
             sendErrorMessage("authenticationui.configureTotp.fail", e, request);

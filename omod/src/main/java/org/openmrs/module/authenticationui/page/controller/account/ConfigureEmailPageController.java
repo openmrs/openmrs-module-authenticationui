@@ -19,6 +19,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
+import org.openmrs.api.context.AuthenticationScheme;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.web.AuthenticationSession;
@@ -144,7 +145,10 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
                 }
                 user.setUserProperty(scheme.getVerifiedEmailUserPropertyName(), pendingEmail);
                 if (StringUtils.isNotBlank(schemeId)) {
-                    user.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
+                    AuthenticationScheme authenticationScheme = AuthenticationConfig.getAuthenticationScheme();
+                    if (authenticationScheme instanceof TwoFactorAuthenticationScheme) {
+                        ((TwoFactorAuthenticationScheme) authenticationScheme).addSecondaryAuthenticationSchemeForUser(user, schemeId);
+                    }
                 }
                 userService.saveUser(user);
 
@@ -156,7 +160,7 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
                     authenticationSession.refreshAuthenticatedUser();
                 }
                 setSuccessMessage(request, "authenticationui.configureEmail.success");
-                return "redirect:authenticationui/account/userAccount.page?userId=" + user.getId();
+                return "redirect:authenticationui/account/twoFactorSetup.page?userId=" + user.getId();
             }
         }
         catch (Exception e) {

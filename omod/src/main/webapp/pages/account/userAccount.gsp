@@ -236,21 +236,25 @@
 
                         <% if (twoFactorAvailable) { %>
 
-                        <div class="row info-header">
-                            <h3>${ ui.message("authenticationui.account.2fa") }</h3>
-                        </div>
+                            <div class="row info-header">
+                                <h3>${ ui.message("authenticationui.account.2fa") }</h3>
+                            </div>
 
-                        <div class="row">
-                            <span class="col-4 account-info-label">${ ui.message("authenticationui.2fa.status") }: </span>
-                            <span class="col-8 account-info-value">${ ui.message(account.twoFactorAuthenticationMethod ? "authenticationui.2fa.enabled" : "authenticationui.2fa.disabled") }</span>
-                        </div>
+                            <div class="row">
+                                <span class="col-4 account-info-label">${ ui.message("authenticationui.2fa.status") }: </span>
+                                <span class="col-8 account-info-value">${ ui.message(account.twoFactorAuthenticationMethods ? "authenticationui.2fa.enabled" : "authenticationui.2fa.disabled") }</span>
+                            </div>
 
-                        <% if (account.twoFactorAuthenticationMethod) { %>
-                        <div class="row">
-                            <span class="col-4 account-info-label">${ ui.message("authenticationui.2fa.method") }: </span>
-                            <span class="col-8 account-info-value">${ ui.message("authenticationui." + account.twoFactorAuthenticationMethod + ".name") }</span>
-                        </div>
-                        <% } %>
+                            <% if (!account.twoFactorAuthenticationMethods.isEmpty()) { %>
+                                <div class="row">
+                                    <span class="col-4 account-info-label">${ ui.message("authenticationui.2fa.method") }: </span>
+                                    <span class="col-8 account-info-value">
+                                        <% account.twoFactorAuthenticationMethods.eachWithIndex { method, index -> %>
+                                            ${(index > 0 ? ", " : "") + ui.message("authenticationui." + method + ".name") }
+                                        <% } %>
+                                    </span>
+                                </div>
+                            <% } %>
 
                         <% } %>
                     </div>

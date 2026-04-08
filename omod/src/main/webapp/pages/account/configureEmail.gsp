@@ -26,7 +26,7 @@
             <input id="email-input" type="text" name="email" value="${ ui.escapeJs(email ?: '') }" placeholder="${ ui.message("authenticationui.configureEmail.email.placeholder") }"/>
         </div>
         <div style="padding-top: 10px;">
-            <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
+            <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/twoFactorSetup.page?userId=${user.id}'" />
             <input type="submit" class="confirm" id="send-button" value="${ ui.message("authenticationui.configureEmail.sendCode") }"/>
         </div>
 
@@ -38,7 +38,7 @@
             <input type="hidden" name="email" value="${ ui.escapeJs(email ?: '') }"/>
         </div>
         <div style="padding-top: 10px;">
-            <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
+            <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/twoFactorSetup.page?userId=${user.id}'" />
             <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"/>
         </div>
 

@@ -79,7 +79,7 @@
         <% } %>
         <div class="row" style="padding-top:10px;">
             <div class="col">
-                <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
+                <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/twoFactorSetup.page?userId=${user.id}'" />
                 <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
             </div>
         </div>

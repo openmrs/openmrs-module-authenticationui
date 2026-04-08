@@ -27,7 +27,7 @@
         <input id="code-input" type="text" name="code" value="" placeholder="${ ui.message("authenticationui.configureTotp.code.placeholder") }"/>
     </div>
     <div style="padding-top: 10px;">
-        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
+        <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/twoFactorSetup.page?userId=${user.id}'" />
         <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
     </div>
 </form>
