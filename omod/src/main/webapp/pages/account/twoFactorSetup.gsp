@@ -108,26 +108,37 @@
                 </div>
             </div>
         <% } %>
-        <div>
-            <div class="section available-method-section">
-                ${ui.message("authenticationui.configure2fa.addMethod")}
-            </div>
-            <% availableOptions.values().eachWithIndex { option, index ->
-                def schemeId = option.schemeId
-                if (!configuredSchemeIds.contains(schemeId)) { %>
-                    <form method="post" action="${ui.pageLink("authenticationui", "account/twoFactorSetup")}">
-                        <div class="method">
-                            ${ ui.message("authenticationui." + schemeId + ".name") }
-                            <span class="add-action">
-                                <a href="javascript:addOption('${option.schemeId}')">
-                                    <i class="fa fa-fw fa-plus-circle"></i>
-                                </a>
-                            </span>
-                        </div>
-                    </form>
+
+        <%
+                def methodsToAdd = []
+                availableOptions.values().eachWithIndex { option, index ->
+                    if (!configuredSchemeIds.contains(option.schemeId)) {
+                        methodsToAdd.add(option)
+                    }
+                }
+        %>
+        <% if (!methodsToAdd.isEmpty()) { %>
+            <div>
+                <div class="section available-method-section">
+                    ${ui.message("authenticationui.configure2fa.addMethod")}
+                </div>
+                <% availableOptions.values().eachWithIndex { option, index ->
+                    def schemeId = option.schemeId
+                    if (!configuredSchemeIds.contains(schemeId)) { %>
+                        <form method="post" action="${ui.pageLink("authenticationui", "account/twoFactorSetup")}">
+                            <div class="method">
+                                ${ ui.message("authenticationui." + schemeId + ".name") }
+                                <span class="add-action">
+                                    <a href="javascript:addOption('${option.schemeId}')">
+                                        <i class="fa fa-fw fa-plus-circle"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </form>
+                    <% } %>
                 <% } %>
-            <% } %>
-        </div>
+            </div>
+        <% } %>
 
         <form id="action-form" style="display:none; " method="post" action="${ui.pageLink("authenticationui", "account/twoFactorSetup")}">
             <input type="hidden" name="userId" value="${user.userId}"/>

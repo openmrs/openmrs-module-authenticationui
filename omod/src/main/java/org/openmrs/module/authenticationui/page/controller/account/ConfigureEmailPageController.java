@@ -31,6 +31,7 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -178,9 +179,9 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
 
     protected void sendCode(String email, String code) {
         try {
-            String subject = Context.getMessageSourceService().getMessage(
-                    "authentication.email.subject", null, "authentication.email.subject", Context.getLocale());
-            Message message = Context.getMessageService().createMessage(email, "", subject, code);
+            MessageSource messageSource = Context.getMessageSourceService().getActiveMessageSource();
+            String subject = messageSource.getMessage("authentication.email.subject", new Object[] {code}, Context.getLocale());
+            Message message = Context.getMessageService().createMessage(email, "", subject, subject);
             Context.getMessageService().sendMessage(message);
         }
         catch (MessageException e) {
