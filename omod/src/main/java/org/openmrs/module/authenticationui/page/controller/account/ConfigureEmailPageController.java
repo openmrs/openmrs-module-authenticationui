@@ -139,7 +139,9 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
                 }
 
                 // Code is valid — update the user
-                user.setEmail(pendingEmail);
+                if (StringUtils.isBlank(user.getEmail())) {
+                    user.setEmail(pendingEmail);
+                }
                 user.setUserProperty(scheme.getVerifiedEmailUserPropertyName(), pendingEmail);
                 if (StringUtils.isNotBlank(schemeId)) {
                     user.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
