@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.context.AuthenticationScheme;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.authentication.AuthenticationConfig;
 import org.openmrs.module.authentication.UserLogin;
 import org.openmrs.module.authentication.web.AuthenticationSession;
 import org.openmrs.module.authentication.web.EmailAuthenticationScheme;
@@ -53,7 +54,7 @@ public class LoginEmailPageController {
 		}
 
 		String email = null;
-		AuthenticationScheme scheme = Context.getAuthenticationScheme();
+		AuthenticationScheme scheme = AuthenticationConfig.getAuthenticationScheme();
 		if (scheme instanceof TwoFactorAuthenticationScheme) {
 			TwoFactorAuthenticationScheme tfaScheme = (TwoFactorAuthenticationScheme) scheme;
 			WebAuthenticationScheme secondaryScheme = tfaScheme.getSecondaryAuthenticationScheme(session, candidateUser);
