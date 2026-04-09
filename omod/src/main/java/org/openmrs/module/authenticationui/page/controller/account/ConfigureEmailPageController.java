@@ -67,8 +67,17 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
 
         String pendingEmail = (String) session.getAttribute(SESSION_KEY_PENDING_EMAIL);
 
+        EmailAuthenticationScheme emailAuthenticationScheme = (EmailAuthenticationScheme) AuthenticationConfig.getAuthenticationScheme(schemeId);
+        String email = pendingEmail;
+        if (StringUtils.isBlank(email)) {
+            email = emailAuthenticationScheme.getVerifiedEmailForUser(user);
+        }
+        if (StringUtils.isBlank(email)) {
+            email = StringUtils.defaultString(user.getEmail());
+        }
+
         model.addAttribute("schemeId", schemeId);
-        model.addAttribute("email", pendingEmail != null ? pendingEmail : StringUtils.defaultString(user.getEmail()));
+        model.addAttribute("email", email);
         model.addAttribute("codeSent", pendingEmail != null);
 
         return "account/configureEmail";

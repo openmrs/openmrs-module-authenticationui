@@ -16,9 +16,13 @@ package org.openmrs.module.authenticationui.page.controller.login;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
+import org.openmrs.api.context.AuthenticationScheme;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.authentication.UserLogin;
 import org.openmrs.module.authentication.web.AuthenticationSession;
+import org.openmrs.module.authentication.web.EmailAuthenticationScheme;
+import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
+import org.openmrs.module.authentication.web.WebAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -48,7 +52,17 @@ public class LoginEmailPageController {
 			return "redirect:" + ui.pageLink("authenticationui", "login/login");
 		}
 
-		String email = candidateUser.getEmail();
+		String email = null;
+		AuthenticationScheme scheme = Context.getAuthenticationScheme();
+		if (scheme instanceof TwoFactorAuthenticationScheme) {
+			TwoFactorAuthenticationScheme tfaScheme = (TwoFactorAuthenticationScheme) scheme;
+			WebAuthenticationScheme secondaryScheme = tfaScheme.getSecondaryAuthenticationScheme(session, candidateUser);
+			if (secondaryScheme instanceof EmailAuthenticationScheme) {
+				EmailAuthenticationScheme emailScheme = (EmailAuthenticationScheme) secondaryScheme;
+				email = emailScheme.getVerifiedEmailForUser(candidateUser);
+			}
+		}
+
 		if (StringUtils.isBlank(email)) {
 			if (session.getErrorMessage() == null) {
 				session.setErrorMessage("authentication.error.noEmailConfiguredForUser");
