@@ -7,45 +7,65 @@
     .note {
         width: 100%;
     }
-    #options-choices {
-        padding: 20px
+    .method {
+        padding-top: 10px;
+        padding-left: 10px;
     }
-    .option-info {
+    .preferred-method {
         padding-left: 10px;
         font-style: italic;
         font-size: smaller;
+    }
+    .set-preferred-link {
+        font-size: smaller;
+    }
+    .method-action {
+        padding-left: 10px;
     }
     .config-page-link {
         text-decoration: underline;
         color: #007FFF;
     }
+    .available-method-section {
+        padding-top: 20px;
+    }
+    .fa-check-circle {
+        color: green;
+    }
+    .icon-remove-sign {
+        color: red;
+    }
 </style>
+
+<script type="text/javascript">
+    function removeOption(schemeId) {
+        const actionForm = jq("#action-form");
+        actionForm.find("input[name='schemeId']").val(schemeId);
+        actionForm.find("input[name='remove']").val("true");
+        actionForm.submit();
+    }
+    function addOption(schemeId) {
+        const actionForm = jq("#action-form");
+        actionForm.find("input[name='schemeId']").val(schemeId);
+        actionForm.find("input[name='remove']").val("");
+        actionForm.submit();
+    }
+    function setPreferredOption(schemeId) {
+        const actionForm = jq("#action-form");
+        actionForm.find("input[name='schemeId']").val(schemeId);
+        actionForm.find("input[name='remove']").val("");
+        actionForm.find("input[name='preferred']").val("true");
+        actionForm.submit();
+    }
+</script>
 
 <%= ui.includeFragment("authenticationui", "accountBreadcrumbs", [ userId: user.id, label: "authenticationui.configure2fa.title" ]) %>
 
-<script type="text/javascript">
-
-    jQuery(function() {
-        let nextButton = jQuery("#next-button");
-        nextButton.addClass("disabled").attr("disabled", "disabled");
-        jQuery('input[name="schemeId"]').change(function() {
-            var checkedVal = jQuery('input[name="schemeId"]:checked').val()
-            if (checkedVal === '${ existingOption }') {
-                nextButton.addClass("disabled").attr("disabled", "disabled");
-            }
-            else {
-                nextButton.removeClass("disabled").removeAttr("disabled");
-            }
-        });
-    });
-
-</script>
-
 <h3>${ui.message("authenticationui.configure2fa.title")}</h3>
 <div>
-    <% if (twoFactorAvailable) { %>
+    <% if (!availableOptions.isEmpty()) { %>
         <div class="section note-container">
-            <% if (existingOption) { %>
+            <% if (!configuredSchemeIds.isEmpty()) { %>
                 <div class="note success">
                     ${ui.message("authenticationui.configure2fa.accountEnabled")}
                 </div>
@@ -55,41 +75,77 @@
                 </div>
             <% } %>
         </div>
-        <div>
-            <div class="section" id="options-title">
-                ${ui.message("authenticationui.configure2fa.changeMethod")}
-            </div>
-            <form id="options-form" method="post" action="${ui.pageLink("authenticationui", "account/twoFactorSetup")}">
-                <input type="hidden" name="userId" value="${user.userId}"/>
-                <div id="options-choices">
-                    <div class="option-choice">
-                        <input id="empty-option" type="radio" name="schemeId" value="" <%= existingOption ? "" : "checked" %> />
-                        <label for="empty-option">
-                            ${ ui.message("authenticationui.configure2fa.noneSelected") }
-                            <% if (!existingOption) { %>
-                                <span class="option-info">( ${ui.message("authenticationui.configure2fa.currentlySelected")} )</span>
+        <% if (!configuredSchemeIds.isEmpty()) { %>
+            <div class="existing-method-section">
+                <div class="section">
+                    ${ui.message("authenticationui.configure2fa.currentlyConfiguredMethods")}
+                </div>
+                <div>
+                    <% configuredSchemeIds.eachWithIndex { schemeId, index ->
+                        def option = availableOptions.get(schemeId) %>
+                        <div class="method">
+                            <i class="fa fa-fw fa-check-circle"></i>
+                            ${ ui.message("authenticationui." + option.schemeId + ".name") }
+                            <% if (index == 0) { %>
+                                <span class="preferred-method">( ${ ui.message("authenticationui.configure2fa.preferred") } )</span>
+                            <% } else { %>
+                                <a class="set-preferred-link" href="javascript:setPreferredOption('${option.schemeId}')">
+                                    ( ${ ui.message("authenticationui.configure2fa.setPreferred") } )
+                                </a>
                             <% } %>
-                        </label>
-                    </div>
-                    <% secondaryOptions.eachWithIndex { option, index ->
-                        def schemeId = option.schemeId %>
-                        <div class="option-choice">
-                            <input id="option-${schemeId}" type="radio" name="schemeId" value="${schemeId}" <%= option.currentlySelected ? "checked" : "" %> />
-                            <label for="option-${schemeId}">
-                                ${ ui.message("authenticationui." + schemeId + ".name") }
-                                <% if (option.currentlySelected) { %>
-                                    <span class="option-info">( ${ui.message("authenticationui.configure2fa.currentlySelected")} )</span>
-                                <% } %>
-                            </label>
+                            <% if (option.configurationPage) { %>
+                                <span class="method-action">
+                                    <a href="${ option.configurationPage }">
+                                        <i class="fa fa-fw fa-edit"></i>
+                                    </a>
+                                </span>
+                            <% } %>
+                            <a href="javascript:removeOption('${option.schemeId}')">
+                                <i class="fa fa-fw icon-remove-sign"></i>
+                            </a>
                         </div>
                     <% } %>
                 </div>
-                <div>
-                    <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="window.location='/${ contextPath }/authenticationui/account/userAccount.page?userId=${user.id}'" />
-                    <input type="submit" class="confirm" id="next-button" value="${ ui.message("emr.next") }"  />
+            </div>
+        <% } %>
+
+        <%
+                def methodsToAdd = []
+                availableOptions.values().eachWithIndex { option, index ->
+                    if (!configuredSchemeIds.contains(option.schemeId)) {
+                        methodsToAdd.add(option)
+                    }
+                }
+        %>
+        <% if (!methodsToAdd.isEmpty()) { %>
+            <div>
+                <div class="section available-method-section">
+                    ${ui.message("authenticationui.configure2fa.addMethod")}
                 </div>
-            </form>
-        </div>
+                <% availableOptions.values().eachWithIndex { option, index ->
+                    def schemeId = option.schemeId
+                    if (!configuredSchemeIds.contains(schemeId)) { %>
+                        <form method="post" action="${ui.pageLink("authenticationui", "account/twoFactorSetup")}">
+                            <div class="method">
+                                ${ ui.message("authenticationui." + schemeId + ".name") }
+                                <span class="add-action">
+                                    <a href="javascript:addOption('${option.schemeId}')">
+                                        <i class="fa fa-fw fa-plus-circle"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </form>
+                    <% } %>
+                <% } %>
+            </div>
+        <% } %>
+
+        <form id="action-form" style="display:none; " method="post" action="${ui.pageLink("authenticationui", "account/twoFactorSetup")}">
+            <input type="hidden" name="userId" value="${user.userId}"/>
+            <input type="hidden" name="schemeId" value=""/>
+            <input type="hidden" name="remove" value=""/>
+            <input type="hidden" name="preferred" value=""/>
+        </form>
 
     <% } else { %>
         <div class="section note-container">

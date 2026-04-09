@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TwoFactorSetupPageController extends AbstractAccountPageController {
 
@@ -45,27 +48,22 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
             return "redirect:/index.htm";
         }
 
+        List<String> configuredSchemeIds = new ArrayList<>();
+        model.addAttribute("configuredSchemeIds", configuredSchemeIds);
+
+        Map<String, SecondaryOption> availableOptions = new LinkedHashMap<>();
+        model.addAttribute("availableOptions", availableOptions);
+
         AuthenticationScheme authenticationScheme = AuthenticationConfig.getAuthenticationScheme();
-        boolean twoFactorAvailable = (authenticationScheme instanceof TwoFactorAuthenticationScheme);
-        model.addAttribute("twoFactorAvailable", twoFactorAvailable);
-
-        String existingOption = user.getUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE);
-        model.addAttribute("existingOption", existingOption);
-
-        if (twoFactorAvailable) {
+        if (authenticationScheme instanceof TwoFactorAuthenticationScheme) {
             TwoFactorAuthenticationScheme scheme = (TwoFactorAuthenticationScheme) authenticationScheme;
-            List<SecondaryOption> secondaryOptions = new ArrayList<>();
-            for (String schemeId : scheme.getSecondaryOptions()) {
-                SecondaryOption option = new SecondaryOption(schemeId);
-                if (option.getScheme() instanceof WebAuthenticationScheme) {
-                    WebAuthenticationScheme webAuthenticationScheme = (WebAuthenticationScheme) option.getScheme();
-                    option.setConfigurationRequired(webAuthenticationScheme.isUserConfigurationRequired(user));
-                    option.setConfigurationPage(webAuthenticationScheme.getUserConfigurationPage());
-                }
-                option.setCurrentlySelected(schemeId.equalsIgnoreCase(existingOption));
-                secondaryOptions.add(option);
+            String existingOption = user.getUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE);
+            if (StringUtils.isNotBlank(existingOption)) {
+                configuredSchemeIds.addAll(Arrays.asList(existingOption.split(",")));
             }
-            model.addAttribute("secondaryOptions", secondaryOptions);
+            for (String schemeId : scheme.getSecondaryOptions()) {
+                availableOptions.put(schemeId, new SecondaryOption(schemeId, user));
+            }
         }
 
         return "account/twoFactorSetup";
@@ -73,6 +71,8 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
 
     public String post(@RequestParam(value = "userId", required = false) String userId,
                        @RequestParam(value = "schemeId", required = false) String schemeId,
+                       @RequestParam(value = "remove", required = false) Boolean remove,
+                       @RequestParam(value = "preferred", required = false) Boolean preferred,
                        @SpringBean("userService") UserService userService,
                        @SpringBean("authenticationUiConfig") AuthenticationUiConfig authenticationUiConfig,
                        HttpServletRequest request,
@@ -80,44 +80,47 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
                        PageModel model) {
 
         User user = getUserOrAuthenticatedUser(userService, userId);
-        boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
         AuthenticationSession authenticationSession = new AuthenticationSession(session);
 
         try {
             checkPermissionAndAddToModel(authenticationUiConfig, user, model);
+            boolean removeVal = remove == Boolean.TRUE;
+            boolean preferredVal = preferred == Boolean.TRUE;
 
-            // If this scheme requires configuration, redirect to the configuration page
+            AuthenticationScheme authenticationScheme = AuthenticationConfig.getAuthenticationScheme();
+            TwoFactorAuthenticationScheme scheme = (TwoFactorAuthenticationScheme) authenticationScheme;
+            List<String> schemeIds = scheme.getSecondaryAuthenticationSchemeIdsForUser(user);
+
             if (StringUtils.isNotBlank(schemeId)) {
-                AuthenticationScheme scheme = AuthenticationConfig.getAuthenticationScheme(schemeId);
-                if (scheme instanceof WebAuthenticationScheme) {
-                    WebAuthenticationScheme webScheme = (WebAuthenticationScheme) scheme;
-                    if (StringUtils.isNotBlank(webScheme.getUserConfigurationPage())) {
-                        String url = webScheme.getUserConfigurationPage().replace("{schemeId}", schemeId);
-                        // If a user is not editing their own account, and the configuration page does not support a configurable userId, fail
-                        if (!ownAccount) {
-                            if (!url.contains("{userId}")) {
-                                throw new APIException("authenticationui.unauthorizedPageError");
-                            }
-                            url = url.replace("{userId}", user.getUserId().toString());
-                        }
-                        else {
-                            url = url.replace("{userId}", "");
-                        }
-                        return "redirect:" + url;
-                    }
+                SecondaryOption option = new SecondaryOption(schemeId, user);
+
+                boolean onlySettingPreferred = schemeIds.contains(schemeId) && preferredVal;
+
+                // If this scheme requires configuration, redirect to the configuration page
+                if (!onlySettingPreferred && !removeVal && StringUtils.isNotBlank(option.getConfigurationPage())) {
+                    return "redirect:" + option.getConfigurationPage();
                 }
+
+                // Otherwise, add, remove and re-order as appropriate
+                if (remove == Boolean.TRUE) {
+                    schemeIds.remove(schemeId);
+                }
+                else if (!schemeIds.contains(schemeId)) {
+                    schemeIds.add(schemeId);
+                }
+
+                if (preferredVal) {
+                    schemeIds.remove(schemeId);
+                    schemeIds.add(0, schemeId);
+                }
+
+                scheme.setSecondaryAuthenticationSchemeIdsForUser(user, schemeIds);
+
+                userService.saveUser(user);
+                authenticationSession.refreshAuthenticatedUser();
+                setSuccessMessage(request, "authenticationui.configure2fa.success");
+                return "redirect:authenticationui/account/twoFactorSetup.page?userId=" + user.getId();
             }
-            // Otherwise, assume no configuration is needed and set this as the two factor method
-            if (StringUtils.isBlank(schemeId)) {
-                user.removeUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE);
-            }
-            else {
-                user.setUserProperty(TwoFactorAuthenticationScheme.USER_PROPERTY_SECONDARY_TYPE, schemeId);
-            }
-            userService.saveUser(user);
-            authenticationSession.refreshAuthenticatedUser();
-            setSuccessMessage(request, "authenticationui.configure2fa.success");
-            return "redirect:authenticationui/account/userAccount.page?userId=" + user.getId();
         }
         catch (Exception e) {
             sendErrorMessage("authenticationui.configure2fa.fail", e, request);
@@ -134,9 +137,29 @@ public class TwoFactorSetupPageController extends AbstractAccountPageController 
         private String configurationPage;
         private boolean currentlySelected = false;
 
-        public SecondaryOption(String schemeId) {
+        public SecondaryOption(String schemeId, User user) {
             this.schemeId = schemeId;
             this.scheme = AuthenticationConfig.getAuthenticationScheme(schemeId);
+            if (scheme instanceof WebAuthenticationScheme) {
+                WebAuthenticationScheme webAuthenticationScheme = (WebAuthenticationScheme) scheme;
+                this.configurationRequired = webAuthenticationScheme.isUserConfigurationRequired(user);
+                String url = webAuthenticationScheme.getUserConfigurationPage();
+                if (StringUtils.isNotBlank(url)) {
+                    url = url.replace("{schemeId}", schemeId);
+                    // If a user is not editing their own account, and the configuration page does not support a configurable userId, fail
+                    boolean ownAccount = (user.equals(Context.getAuthenticatedUser()));
+                    if (!ownAccount) {
+                        if (!url.contains("{userId}")) {
+                            throw new APIException("authenticationui.unauthorizedPageError");
+                        }
+                        url = url.replace("{userId}", user.getUserId().toString());
+                    }
+                    else {
+                        url = url.replace("{userId}", "");
+                    }
+                }
+                this.configurationPage = url;
+            }
         }
 
         public String getSchemeId() {

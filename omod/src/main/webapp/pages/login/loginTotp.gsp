@@ -4,6 +4,17 @@
             authenticationUiConfig: authenticationUiConfig
     ])
 %>
+<style>
+    #login-form ul.select {
+        width: unset;
+    }
+    #login-form input[type=text], #login-form input[type=password] {
+        min-width: 100%;
+    }
+    #login-page fieldset {
+        display: block;
+    }
+</style>
 <div id="login-page">
 
     <form id="login-form" method="post" autocomplete="off">
@@ -28,6 +39,8 @@
             </p>
 
         </fieldset>
+
+        <%= ui.includeFragment("authenticationui", "twoFactorAlternatives") %>
 
     </form>
 
