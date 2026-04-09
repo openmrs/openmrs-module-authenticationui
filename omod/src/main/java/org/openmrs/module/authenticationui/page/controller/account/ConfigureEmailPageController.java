@@ -102,8 +102,8 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
                 if (!EmailValidator.getInstance().isValid(email)) {
                     throw new RuntimeException(getMessage("authenticationui.configureEmail.email.invalid"));
                 }
-                String generatedCode = generateCode();
-                sendCode(email, generatedCode);
+                String generatedCode = scheme.generateCode();
+                scheme.sendCode(email, generatedCode);
 
                 long expiry = System.currentTimeMillis() + (CODE_EXPIRY_MINUTES * 60_000L);
                 session.setAttribute(SESSION_KEY_PENDING_EMAIL, email);
@@ -169,23 +169,5 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
         }
 
         return get(model, userId, schemeId, userService, authenticationUiConfig, session);
-    }
-
-    protected String generateCode() {
-        int max = (int) Math.pow(10, CODE_LENGTH);
-        int code = new SecureRandom().nextInt(max);
-        return String.format("%0" + CODE_LENGTH + "d", code);
-    }
-
-    protected void sendCode(String email, String code) {
-        try {
-            MessageSource messageSource = Context.getMessageSourceService().getActiveMessageSource();
-            String subject = messageSource.getMessage("authentication.email.subject", new Object[] {code}, Context.getLocale());
-            Message message = Context.getMessageService().createMessage(email, "", subject, subject);
-            Context.getMessageService().sendMessage(message);
-        }
-        catch (MessageException e) {
-            throw new RuntimeException(getMessage("authenticationui.configureEmail.sendFailed"));
-        }
     }
 }
