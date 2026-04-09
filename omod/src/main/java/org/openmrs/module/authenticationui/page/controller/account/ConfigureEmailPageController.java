@@ -26,24 +26,19 @@ import org.openmrs.module.authentication.web.AuthenticationSession;
 import org.openmrs.module.authentication.web.EmailAuthenticationScheme;
 import org.openmrs.module.authentication.web.TwoFactorAuthenticationScheme;
 import org.openmrs.module.authenticationui.AuthenticationUiConfig;
-import org.openmrs.notification.Message;
-import org.openmrs.notification.MessageException;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.security.SecureRandom;
 
 public class ConfigureEmailPageController extends AbstractAccountPageController {
 
     static final String SESSION_KEY_PENDING_EMAIL = "configureEmail.pendingEmail";
     static final String SESSION_KEY_CODE = "configureEmail.code";
     static final String SESSION_KEY_EXPIRY = "configureEmail.expiry";
-    static final int CODE_LENGTH = 6;
     static final int CODE_EXPIRY_MINUTES = 10;
 
     @Override
