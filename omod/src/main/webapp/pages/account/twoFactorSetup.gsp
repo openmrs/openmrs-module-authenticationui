@@ -95,7 +95,7 @@
                             <% } %>
                             <% if (option.configurationPage) { %>
                                 <span class="method-action">
-                                    <a href="${ option.configurationPage }">
+                                    <a href="/${ ui.contextPath() }${ option.configurationPage }">
                                         <i class="fa fa-fw fa-edit"></i>
                                     </a>
                                 </span>
