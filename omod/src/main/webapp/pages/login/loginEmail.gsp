@@ -15,6 +15,16 @@
         display: block;
     }
 </style>
+<script type="text/javascript">
+    jQuery(function() {
+        jq("#code-input").on('keydown', function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                jq("#login-button").click();
+            }
+        });
+    });
+</script>
 <div id="login-page">
 
     <form id="login-form" method="post" autocomplete="off">
