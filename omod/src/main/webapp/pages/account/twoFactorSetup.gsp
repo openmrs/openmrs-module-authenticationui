@@ -129,7 +129,7 @@
                             <div class="method">
                                 ${ ui.message("authenticationui." + schemeId + ".name") }
                                 <span class="add-action">
-                                    <a href="javascript:addOption('${option.schemeId}')">
+                                    <a href="javascript:addOption('${option.schemeId}')" id="${option.schemeId}-option">
                                         <i class="fa fa-fw fa-plus-circle"></i>
                                     </a>
                                 </span>
