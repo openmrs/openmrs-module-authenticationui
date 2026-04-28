@@ -44,6 +44,7 @@ public class AuthenticationUiConfig {
 	public static final String LOGIN_WELCOME_MESSAGE = "welcome-message";
 	public static final String LOGIN_WARNING_IF_NOT_CHROME = "warning-if-not-chrome";
 	public static final String LOGIN_ALLOW_PASSWORD_RESET = "allow-password-reset";
+	public static final String LOGIN_SHOW_REMEMBER_ME = "show-remember-me";
 
 	AppFrameworkService appFrameworkService;
 
@@ -86,6 +87,15 @@ public class AuthenticationUiConfig {
 
 	public boolean isAllowPasswordReset() {
 		return getConfig(LOGIN_PAGE_EXTENSION, LOGIN_ALLOW_PASSWORD_RESET, false);
+	}
+
+	/**
+	 * @return true if the "remember this device" checkbox should be rendered on secondary-factor login pages.
+	 * Independent of {@code authentication.scheme.{schemeId}.config.rememberMeEnabled} on the backend - if the
+	 * backend is disabled, the submitted parameter is ignored. Defaults to false.
+	 */
+	public boolean isShowRememberMe() {
+		return getConfig(LOGIN_PAGE_EXTENSION, LOGIN_SHOW_REMEMBER_ME, false);
 	}
 
 	public String getAdminPageUrl(UiUtils ui) {
