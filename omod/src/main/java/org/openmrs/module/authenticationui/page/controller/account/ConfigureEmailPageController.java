@@ -103,9 +103,7 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
 
             if (StringUtils.isBlank(code)) {
                 // Step 1: validate email and send verification code
-                if (!EmailValidator.getInstance().isValid(email)) {
-                    throw new RuntimeException(getMessage("authenticationui.configureEmail.email.invalid"));
-                }
+                validateEmail(user, email);
                 String generatedCode = scheme.generateCode();
                 scheme.sendCode(email, generatedCode);
 
@@ -173,5 +171,21 @@ public class ConfigureEmailPageController extends AbstractAccountPageController 
         }
 
         return get(model, userId, schemeId, userService, authenticationUiConfig, session);
+    }
+
+    private void validateEmail(User user, String email) {
+        if (!EmailValidator.getInstance().isValid(email)) {
+            throw new RuntimeException(getMessage("authenticationui.configureEmail.email.invalid"));
+        }
+        try {
+            Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+            User existingUser = Context.getUserService().getUserByUsernameOrEmail(email);
+            if (existingUser != null && !existingUser.getUuid().equals(user.getUuid())) {
+                throw new RuntimeException(getMessage("authenticationui.configureEmail.email.exists"));
+            }
+        }
+        finally {
+            Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+        }
     }
 }
