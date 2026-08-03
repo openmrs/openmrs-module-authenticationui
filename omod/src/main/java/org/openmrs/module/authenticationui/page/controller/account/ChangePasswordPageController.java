@@ -98,6 +98,8 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
             }
             catch (Exception e) {
                 sendErrorMessage("authenticationui.changePassword.fail", e, request);
+                // Re-fetch the user: a failed changePassword() call rolls back the current transaction,
+                changePassword.setUser(userService.getUser(changePassword.getUser().getId()));
             }
         }
         else {
@@ -109,7 +111,7 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
     }
 
     public static class ChangePassword {
-        private final User user;
+        private User user;
         private final String oldPassword;
         private final String newPassword;
         private final String confirmPassword;
@@ -123,6 +125,10 @@ public class ChangePasswordPageController extends AbstractAccountPageController 
 
         public User getUser() {
             return user;
+        }
+
+        public void setUser(User user) {
+            this.user = user;
         }
 
         public String getConfirmPassword() {
