@@ -88,7 +88,7 @@ ${ ui.includeFragment("appui", "header") }
 <div id="body-wrapper" class="container">
     <div id="reset-password-page">
         <form method="post" id="reset-password-forms" action="${ui.pageLink("authenticationui", "account/resetPassword")}">
-            <input type="hidden" name="activationKey" value="${ ui.escapeAttribute(activationKey) }"/>
+            <input type="hidden" name="activationKey" value="${ ui.encodeHtmlAttribute(activationKey) }"/>
             <legend>${ ui.message("authenticationui.changePassword.newPassword") }</legend>
 
             <p id="newPasswordSection" class="emr_passwordDetails">
