@@ -80,9 +80,10 @@ public class ResetPasswordPageController extends AbstractAccountPageController {
             request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");
         }
         catch (Exception e) {
+            String reason = e.getMessage() == null ? e.getClass().getSimpleName() : getMessage(e.getMessage());
             request.getSession().setAttribute(
                     UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE,
-                    ui.message("authenticationui.changePassword.fail", new Object[]{e.getMessage()}, Context.getLocale())
+                    getMessage("authenticationui.changePassword.fail", reason)
             );
             log.warn("An error occurred while trying to reset password", e);
         }
